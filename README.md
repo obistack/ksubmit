@@ -237,8 +237,6 @@ To run all tests:
 python -m pytest
 ```
 
-For more details on testing, see the [tests/README.md](tests/README.md) file.
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

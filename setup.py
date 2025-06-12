@@ -7,7 +7,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="ksubmit",
-    version="0.1.3",
+    version="0.1.5",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -46,11 +46,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="kubernetes, batch, jobs, cli, hpc, grid-engine, uge, job-scheduler",
-    url="https://github.com/kilonzi/ksubmit",
+    url="https://github.com/obistack/ksubmit",
     project_urls={
-        "Documentation": "https://github.com/kilonzi/ksubmit",
-        "Source": "https://github.com/kilonzi/ksubmit",
-        "Bug Tracker": "https://github.com/kilonzi/ksubmit/issues",
+        "Documentation": "https://github.com/obistack/ksubmit",
+        "Source": "https://github.com/obistack/ksubmit",
+        "Bug Tracker": "https://github.com/obistack/ksubmit/issues",
     },
     classifiers=[
         "Development Status :: 4 - Beta",
