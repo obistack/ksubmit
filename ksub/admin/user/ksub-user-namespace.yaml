@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: johnsmith        # Kubernetes-safe username or namespace
+  labels:
+    ksub/email: john_smith_example_com   # Replace @ with _ to conform to label rules

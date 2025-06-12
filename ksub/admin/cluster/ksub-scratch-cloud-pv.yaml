@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ksub-scratch-cloud-pv
+  labels:
+    ksub/role: shared
+spec:
+  capacity:
+    storage: 1000Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  csi:
+    driver: gcsfuse.csi.storage.gke.io
+    volumeHandle: scratchspaces
+  mountOptions:
+    - implicit-dirs
+    - uid=1000
+    - gid=1000
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ksub-scratch-cloud-pvc
+  namespace: ksub-admin
+  labels:
+    ksub/role: scratch
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: ksub-scratch-cloud-pv

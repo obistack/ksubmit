@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ksub-scratch-cloud-pv-johnkitonyo
+  labels:
+    ksub/role: scratch
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard-rwo
+  csi:
+    driver: gcsfuse.csi.storage.gke.io
+    volumeHandle: scratchspaces/johnkitonyo
+    readOnly: false
+  mountOptions:
+    - implicit-dirs
+    - uid=1000
+    - gid=1000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ksub-shared-cloud-pvc
+  namespace: johnkitonyo
+  labels:
+    ksub/role: scratch
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: standard-rwo
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: ksub-scratch-cloud-pv-johnkitonyo

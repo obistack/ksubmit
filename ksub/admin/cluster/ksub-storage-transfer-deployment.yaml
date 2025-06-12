@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ksub-storage-transfer
+  namespace: ksub-admin
+  labels:
+    app: ksub-storage-transfer
+    purpose: ksub-infrastructure
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ksub-storage-transfer
+  template:
+    metadata:
+      labels:
+        app: ksub-storage-transfer
+        purpose: ksub-infrastructure
+      annotations:
+        gke-gcsfuse/volumes: "true"
+    spec:
+      containers:
+      - name: storage-transfer-helper
+        image: bitnami/kubectl:latest
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        command: ["/bin/sh"]
+        args: ["-c", "sleep infinity"]
+        volumeMounts:
+        - name: scratch-space-cloud-pvc
+          mountPath: /mnt/cloud/scratch
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+      volumes:
+      - name: scratch-space-cloud-pvc
+        persistentVolumeClaim:
+          claimName: ksub-scratch-cloud-pvc
