@@ -7,7 +7,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="ksubmit",
-    version="0.1.5",
+    version="0.1.6",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -42,7 +42,9 @@ setup(
     python_requires=">=3.8",
     author="John Kitonyo",
     author_email="johnkitonyo@outlook.com",
-    description="A Kubernetes job submission tool for batch processing",
+    description="KSUBMIT (pronounced “submit” — silent “k”) is a Python CLI tool that makes it easy to submit "
+                "batch jobs to Kubernetes. Using a simple syntax inspired by Univa Grid Engine, it helps you"
+                " run HPC-style workloads on Kubernetes without needing to write complex YAML files",
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="kubernetes, batch, jobs, cli, hpc, grid-engine, uge, job-scheduler",
