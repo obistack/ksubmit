@@ -1,10 +1,10 @@
-# KSUB - Kubernetes Job Submission Tool with Shorthand Commands
+# KSUBMIT - Kubernetes Job Submission Tool with Shorthand Commands
 
 A Python-based CLI tool that parses shell scripts with UGE-like #$ directives and translates them into Kubernetes jobs.
 
 ## Overview
 
-KSUB makes it easy to submit batch jobs to Kubernetes clusters using a familiar syntax inspired by Univa Grid Engine (UGE). It allows you to:
+KSUBMIT makes it easy to submit batch jobs to Kubernetes clusters using a familiar syntax inspired by Univa Grid Engine (UGE). It allows you to:
 
 - Parse shell scripts with UGE-like #$ directives
 - Generate Kubernetes job specifications
@@ -16,17 +16,17 @@ KSUB makes it easy to submit batch jobs to Kubernetes clusters using a familiar 
 
 ```bash
 # Install from PyPI
-pip install ksub
+pip install ksubmit
 
 # Or install from source
-git clone https://github.com/yourusername/ksub.git
-cd ksub
+git clone https://github.com/yourusername/ksubmit.git
+cd ksubmit
 pip install -e .
 ```
 
 ## Quick Start
 
-1. Initialize KSUB configuration:
+1. Initialize KSUBMIT configuration:
 ```bash
 kinit
 ```
@@ -124,7 +124,7 @@ KSUB validates job scripts against the following rules to ensure they are correc
 
 ## Configuration
 
-KSUB stores configuration in `~/.ksub/config.yaml`. You can view or update this configuration using:
+KSUBMIT stores configuration in `~/.ksubmit/config.yaml`. You can view or update this configuration using:
 
 ```bash
 # View configuration
@@ -148,7 +148,7 @@ Here's a simple example of a job script that runs a Python container and prints 
 #$ -l h_vmem=2G
 #$ -l h_rt=00:10:00
 #$ -pe smp 1
-#$ -v MSG="Hello from ksub"
+#$ -v MSG="Hello from ksubmit"
 
 echo "$MSG"
 ```

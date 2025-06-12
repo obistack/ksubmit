@@ -6,7 +6,7 @@ with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="ksub",
+    name="ksubmit",
     version="0.1.3",
     packages=find_packages(),
     include_package_data=True,
@@ -26,17 +26,17 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "krun=ksub.cli.shorthand:main",
-            "kstat=ksub.cli.shorthand:main",
-            "klogs=ksub.cli.shorthand:main",
-            "kdesc=ksub.cli.shorthand:main",
-            "kdel=ksub.cli.shorthand:main",
-            "kls=ksub.cli.shorthand:main",
-            "klist=ksub.cli.shorthand:main",
-            "klint=ksub.cli.shorthand:main",
-            "kconfig=ksub.cli.shorthand:main",
-            "kversion=ksub.cli.shorthand:main",
-            "kinit=ksub.cli.shorthand:main",
+            "krun=ksubmit.cli.shorthand:main",
+            "kstat=ksubmit.cli.shorthand:main",
+            "klogs=ksubmit.cli.shorthand:main",
+            "kdesc=ksubmit.cli.shorthand:main",
+            "kdel=ksubmit.cli.shorthand:main",
+            "kls=ksubmit.cli.shorthand:main",
+            "klist=ksubmit.cli.shorthand:main",
+            "klint=ksubmit.cli.shorthand:main",
+            "kconfig=ksubmit.cli.shorthand:main",
+            "kversion=ksubmit.cli.shorthand:main",
+            "kinit=ksubmit.cli.shorthand:main",
         ],
     },
     python_requires=">=3.8",
@@ -46,11 +46,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="kubernetes, batch, jobs, cli, hpc, grid-engine, uge, job-scheduler",
-    url="https://github.com/kilonzi/ksub",
+    url="https://github.com/kilonzi/ksubmit",
     project_urls={
-        "Documentation": "https://github.com/kilonzi/ksub",
-        "Source": "https://github.com/kilonzi/ksub",
-        "Bug Tracker": "https://github.com/kilonzi/ksub/issues",
+        "Documentation": "https://github.com/kilonzi/ksubmit",
+        "Source": "https://github.com/kilonzi/ksubmit",
+        "Bug Tracker": "https://github.com/kilonzi/ksubmit/issues",
     },
     classifiers=[
         "Development Status :: 4 - Beta",

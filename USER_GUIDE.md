@@ -1,14 +1,14 @@
-# KSUB: Kubernetes Job Submission Tool with Shorthand Commands
+# KSUBMIT: Kubernetes Job Submission Tool with Shorthand Commands
 
 ## Introduction
 
-KSUB (pronounced "sub" - the 'k' is silent, like in "knife") is a Python-based CLI tool that simplifies submitting batch jobs to Kubernetes clusters using a familiar syntax inspired by Univa Grid Engine (UGE). It bridges the gap between traditional HPC job submission systems and modern Kubernetes orchestration, making it easier for users to transition their workloads to Kubernetes without having to learn complex YAML specifications.
+KSUBMIT (pronounced "submit" - the 'k' is silent, like in "knife") is a Python-based CLI tool that simplifies submitting batch jobs to Kubernetes clusters using a familiar syntax inspired by Univa Grid Engine (UGE). It bridges the gap between traditional HPC job submission systems and modern Kubernetes orchestration, making it easier for users to transition their workloads to Kubernetes without having to learn complex YAML specifications.
 
 ## UGE Inspiration
 
-KSUB is heavily inspired by Univa Grid Engine (UGE) and similar HPC job schedulers. This inspiration is evident in several aspects:
+KSUBMIT is heavily inspired by Univa Grid Engine (UGE) and similar HPC job schedulers. This inspiration is evident in several aspects:
 
-1. **Directive Syntax**: KSUB uses the familiar `#$` directive syntax in job scripts, making it immediately familiar to UGE users.
+1. **Directive Syntax**: KSUBMIT uses the familiar `#$` directive syntax in job scripts, making it immediately familiar to UGE users.
    ```bash
    #$ -N my-job        # Job name (same as UGE)
    #$ -l h_vmem=4G     # Memory request (same syntax as UGE)
@@ -22,14 +22,14 @@ KSUB is heavily inspired by Univa Grid Engine (UGE) and similar HPC job schedule
 
 ## Key Differences from UGE
 
-While KSUB maintains familiar syntax and workflows, it adds several modern features that go beyond traditional UGE capabilities:
+While KSUBMIT maintains familiar syntax and workflows, it adds several modern features that go beyond traditional UGE capabilities:
 
-1. **Container-Based Execution**: Unlike UGE which typically runs jobs directly on hosts, KSUB runs every job in a container, specified with the `-I` directive:
+1. **Container-Based Execution**: Unlike UGE which typically runs jobs directly on hosts, KSUBMIT runs every job in a container, specified with the `-I` directive:
    ```bash
    #$ -I docker.io/library/python:3.10
    ```
 
-2. **Simplified Storage Mounting**: KSUB provides easy ways to mount local and cloud storage into job containers:
+2. **Simplified Storage Mounting**: KSUBMIT provides easy ways to mount local and cloud storage into job containers:
    ```bash
    #$ -mount data=./data
    #$ -remote-mount reference=gs://my-bucket/reference-data
@@ -55,11 +55,11 @@ While KSUB maintains familiar syntax and workflows, it adds several modern featu
    #$ -labels project=ml,env=dev
    ```
 
-7. **Run Management**: KSUB introduces the concept of "runs" that group related jobs together, making it easier to manage complex workflows.
+7. **Run Management**: KSUBMIT introduces the concept of "runs" that group related jobs together, making it easier to manage complex workflows.
 
 ## CLI Commands and Usage
 
-KSUB provides a set of shorthand commands that follow the pattern `k<command>`. Here's a comprehensive guide to these commands:
+KSUBMIT provides a set of shorthand commands that follow the pattern `k<command>`. Here's a comprehensive guide to these commands:
 
 ### Initialization and Configuration
 
@@ -81,7 +81,7 @@ This command:
 - Saves configuration
 
 #### `kconfig`
-Manages KSUB configuration.
+Manages KSUBMIT configuration.
 
 ```bash
 # View all configuration
@@ -98,7 +98,7 @@ kconfig reset
 ```
 
 #### `kversion`
-Displays the current version of KSUB.
+Displays the current version of KSUBMIT.
 
 ```bash
 kversion
@@ -190,7 +190,7 @@ klint my_script.sh --strict  # Treat warnings as errors
 
 ## Job Script Directives
 
-KSUB job scripts use UGE-like directives that start with `#$`. Here are the supported directives:
+KSUBMIT job scripts use UGE-like directives that start with `#$`. Here are the supported directives:
 
 ### Important Directive Ordering Rules
 
@@ -227,9 +227,9 @@ For example, this is the correct order:
 
 ## Simple Example Workflow
 
-Let's walk through a complete example of using KSUB from initialization to job submission and management:
+Let's walk through a complete example of using KSUBMIT from initialization to job submission and management:
 
-### 1. Initialize KSUB
+### 1. Initialize KSUBMIT
 
 ```bash
 kinit
@@ -246,7 +246,7 @@ This will set up your configuration for submitting jobs.
 #$ -l h_vmem=2G
 #$ -l h_rt=00:10:00
 #$ -pe smp 1
-#$ -v MSG="Hello from ksub"
+#$ -v MSG="Hello from ksubmit"
 
 echo "$MSG"
 ```
@@ -299,7 +299,7 @@ Expected output:
 ```
 ===== Logs for job: hello-world (job-abcdef123456) =====
 
-Hello from ksub
+Hello from ksubmit
 ```
 
 ### 6. Get Detailed Job Information
@@ -325,6 +325,6 @@ All jobs in run run-12345abc have been processed.
 
 ## Conclusion
 
-KSUB provides a user-friendly interface for submitting and managing Kubernetes jobs, bridging the gap between traditional HPC job submission systems like UGE and modern container orchestration. With its intuitive UGE-like syntax and comprehensive command set, KSUB makes it easy to transition workloads to Kubernetes without having to learn complex YAML specifications.
+KSUBMIT provides a user-friendly interface for submitting and managing Kubernetes jobs, bridging the gap between traditional HPC job submission systems like UGE and modern container orchestration. With its intuitive UGE-like syntax and comprehensive command set, KSUBMIT makes it easy to transition workloads to Kubernetes without having to learn complex YAML specifications.
 
-By using KSUB, users can focus on their computational tasks rather than the intricacies of Kubernetes job configuration, leading to increased productivity and more efficient resource utilization.
+By using KSUBMIT, users can focus on their computational tasks rather than the intricacies of Kubernetes job configuration, leading to increased productivity and more efficient resource utilization.

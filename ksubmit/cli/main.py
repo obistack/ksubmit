@@ -1,5 +1,5 @@
 """
-Main CLI entry point for ksub.
+Main CLI entry point for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -7,12 +7,12 @@ from typing import Optional
 import os
 from pathlib import Path
 
-from ksub import __version__
-from ksub.cli import submit, config, logs, list, delete, status, describe, lint
+from ksubmit import __version__
+from ksubmit.cli import submit, config, logs, list, delete, status, describe, lint
 
 # Create typer app
 app = typer.Typer(
-    help="ksub - Kubernetes Job Submission Tool",
+    help="ksubmit - Kubernetes Job Submission Tool",
     add_completion=True,
 )
 
@@ -33,7 +33,7 @@ app.add_typer(lint.app, name="lint")
 @app.callback()
 def callback():
     """
-    ksub - Kubernetes Job Submission Tool
+    ksubmit - Kubernetes Job Submission Tool
 
     A Python-based CLI tool that parses shell scripts with UGE-like
     #$ directives and translates them into Kubernetes jobs.
@@ -43,8 +43,8 @@ def callback():
 
 @app.command("version")
 def version():
-    """Print the current version of ksub."""
-    console.print(f"[bold green]ksub[/bold green] version: [bold]{__version__}[/bold]")
+    """Print the current version of ksubmit."""
+    console.print(f"[bold green]ksubmit[/bold green] version: [bold]{__version__}[/bold]")
 
 
 @app.command("init")
@@ -62,9 +62,9 @@ def init(
     - Checks that admin storage transfer pod exists
     - Verifies shared volume mounts exist in the namespace
     - Saves configuration including cloud_mount and scratch_dir paths
-    - Creates/updates .ksub/secrets.env file with environment variables
+    - Creates/updates .ksubmit/secrets.env file with environment variables
     """
-    from ksub.config.user_config import initialize_config
+    from ksubmit.config.user_config import initialize_config
 
     if initialize_config(namespace, email):
         console.print("[bold green]✓[/bold green] Configuration initialized successfully!")
