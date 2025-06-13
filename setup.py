@@ -7,11 +7,11 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="ksubmit",
-    version="0.1.8",
+    version="0.1.10",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "typer[all]",  # CLI with colors
+        "typer",  # CLI with colors
         "pyyaml",  # YAML generation
         "kubernetes",  # Kubernetes Python SDK
         "python-dotenv",  # .env file support
@@ -32,10 +32,10 @@ setup(
             "kdesc=ksubmit.cli.shorthand:main",
             "kdel=ksubmit.cli.shorthand:main",
             "kls=ksubmit.cli.shorthand:main",
-            "klist=ksubmit.cli.shorthand:main",
             "klint=ksubmit.cli.shorthand:main",
             "kconfig=ksubmit.cli.shorthand:main",
             "kversion=ksubmit.cli.shorthand:main",
+            "khelp=ksubmit.cli.shorthand:main",
         ],
     },
     python_requires=">=3.8",

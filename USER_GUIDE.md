@@ -100,6 +100,14 @@ Displays the current version of KSUBMIT.
 kversion
 ```
 
+#### `khelp`
+Lists all available commands, their parameters, and purposes. If a specific command is provided, detailed help for that command will be shown.
+
+```bash
+khelp                # List all available commands
+khelp krun           # Show detailed help for the krun command
+```
+
 ### Job Submission
 
 #### `krun`
@@ -130,13 +138,13 @@ kls --label project=ml   # Filter by label
 kls --run run-12345abc   # Filter by run ID
 ```
 
-#### `klist`
+#### `kls --runs`
 Lists all runs and their associated jobs.
 
 ```bash
-klist
-klist --limit 10         # Show only 10 most recent runs
-klist --output json      # Output in JSON format
+kls --runs                # List all runs
+kls --runs --limit 10     # Show only 10 most recent runs
+kls --runs --output json  # Output in JSON format
 ```
 
 #### `kstat`
@@ -228,7 +236,7 @@ Let's walk through a complete example of using KSUBMIT from initialization to jo
 ### 1. Initialize KSUBMIT
 
 ```bash
-kinit
+kconfig init
 ```
 
 This will set up your configuration for submitting jobs.
@@ -265,7 +273,7 @@ Use this run ID to manage all jobs in this submission:
   • View logs: klogs run-12345abc
   • Get details: kdesc run-12345abc
   • Delete jobs: kdel run-12345abc
-  • List all runs: klist
+  • List all runs: kls --runs
 ```
 
 ### 4. Check Job Status
