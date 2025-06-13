@@ -1,5 +1,5 @@
 """
-User configuration module for ksub.
+User configuration module for ksubmit.
 """
 import os
 import yaml
@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Optional, Dict, Any
 from rich.console import Console
-from ksub.config.constants import CONFIG_DIR, CONFIG_FILE, SECRETS_FILE
+from ksubmit.config.constants import CONFIG_DIR, CONFIG_FILE, SECRETS_FILE
 
 console = Console()
 
@@ -140,7 +140,7 @@ def initialize_config(namespace: Optional[str], email: Optional[str]) -> bool:
     from rich.prompt import Prompt
 
     # Import here to avoid circular imports
-    from ksub.kubernetes.client import (
+    from ksubmit.kubernetes.client import (
         get_kubernetes_contexts, 
         set_kubernetes_context, 
         check_namespace_exists,
@@ -255,11 +255,11 @@ def initialize_config(namespace: Optional[str], email: Optional[str]) -> bool:
     console.print("\n[bold]Step 4: Check Namespace Is Labeled with Email[/bold]")
 
     # Check if namespace has the email label
-    has_label, error_message = check_namespace_label(namespace, "ksub/email", safe_email)
+    has_label, error_message = check_namespace_label(namespace, "ksubmit/email", safe_email)
     if not has_label:
         console.print(f"[bold red]❌[/bold red] Email label mismatch.")
         console.print(f"Ask admin to fix:")
-        console.print(f"kubectl label namespace {namespace} ksub/email={safe_email} --overwrite")
+        console.print(f"kubectl label namespace {namespace} ksubmit/email={safe_email} --overwrite")
         return False
 
     # Step 5: Check Admin Storage Transfer Pod Exists
@@ -270,7 +270,7 @@ def initialize_config(namespace: Optional[str], email: Optional[str]) -> bool:
     if not pod_exists:
         console.print(f"[bold red]❌[/bold red] {error_message}")
         console.print(f"Ask admin to deploy it:")
-        console.print(f"kubectl apply -f ksub-storage-transfer.yaml -n ksub-admin")
+        console.print(f"kubectl apply -f ksubmit-storage-transfer.yaml -n ksubmit-admin")
         return False
 
     # Step 6: Check Shared Volume Mounts Exist
@@ -281,7 +281,7 @@ def initialize_config(namespace: Optional[str], email: Optional[str]) -> bool:
     if not mounts_exist:
         console.print(f"[bold red]❌[/bold red] {error_message}")
         console.print(f"Ask admin to run:")
-        console.print(f"kubectl apply -f ksub-shared-cloud-pvc.yaml -n {namespace}")
+        console.print(f"kubectl apply -f ksubmit-shared-cloud-pvc.yaml -n {namespace}")
         return False
 
     # Step 7: Save to Local Config
@@ -310,11 +310,11 @@ def initialize_config(namespace: Optional[str], email: Optional[str]) -> bool:
     console.print("\n[bold green]Success[/bold green]")
     console.print(f"[bold green]✔️[/bold green] Cluster set to: {selected_context['name']}")
     console.print(f"[bold green]✔️[/bold green] Email verified and namespace: {namespace}")
-    console.print(f"[bold green]✔️[/bold green] ksub-storage-transfer pod is active")
+    console.print(f"[bold green]✔️[/bold green] ksubmit-storage-transfer pod is active")
     console.print(f"[bold green]✔️[/bold green] Shared volume(s) detected")
     console.print(f"[bold green]✔️[/bold green] You can read/write to your personal scratch space in: [cyan]{config['scratch_dir']}[/cyan]")
     console.print(f"[bold green]✔️[/bold green] When using [cyan]-mount samples=./example/local/folder[/cyan], your files will be in: [cyan]{config['scratch_dir']}samples/[/cyan]")
-    console.print(f"[bold green]✔️[/bold green] ksub is ready to submit jobs")
+    console.print(f"[bold green]✔️[/bold green] ksubmit is ready to submit jobs")
 
     return True
 
@@ -339,7 +339,7 @@ def validate_namespace() -> tuple[bool, Optional[str]]:
         - valid: True if namespace exists and is accessible, False otherwise
         - error_message: Error message if failed, None if successful
     """
-    from ksub.kubernetes.client import check_namespace_exists
+    from ksubmit.kubernetes.client import check_namespace_exists
 
     namespace = get_namespace()
     return check_namespace_exists(namespace)
@@ -469,7 +469,7 @@ def create_secrets_env_file() -> bool:
 
         # Initialize with default header
         env_vars = {
-            "# Environment variables for ksub": None,
+            "# Environment variables for ksubmit": None,
             "# Format: KEY=VALUE": None
         }
 
@@ -495,7 +495,7 @@ def create_secrets_env_file() -> bool:
 
         # Write updated secrets file
         with open(SECRETS_FILE, 'w') as f:
-            f.write("# Environment variables for ksub\n")
+            f.write("# Environment variables for ksubmit\n")
             f.write("# Format: KEY=VALUE\n")
             for key, value in env_vars.items():
                 if value is not None:  # Skip header comments

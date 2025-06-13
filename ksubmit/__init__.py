@@ -1,5 +1,5 @@
 """
-ksub - Kubernetes Job Submission Tool
+ksubmit - Kubernetes Job Submission Tool
 
 A Python-based CLI tool that parses shell scripts with UGE-like #$ directives
 and translates them into Kubernetes jobs.

@@ -68,7 +68,7 @@ klogs <job-id>
 | Shorthand Command | Description |
 |---------|-------------|
 | `kinit` | Initialize user config. Selects Kubernetes cluster context, asks for email, checks namespace exists and is labeled correctly, verifies admin storage transfer pod and shared volume mounts, and saves configuration. |
-| `kversion` | Print the current version of KSUB. |
+| `kversion` | Print the current version of ksubmit. |
 | `kconfig` | View or update stored user config (e.g. `email`, `namespace`, `imagePullSecret`). |
 | `krun <file.sh>` | Parse the job script DSL and submit Kubernetes Job(s). Handles mounts, envs, secrets, volumes, retries, etc. |
 | `kls` | List submitted jobs in your namespace. Optionally filter by tags or status. |
@@ -80,7 +80,7 @@ klogs <job-id>
 
 ## Job Script Directives
 
-KSUB supports the following UGE-like directives in job scripts:
+ksubmit supports the following UGE-like directives in job scripts:
 
 | Directive              | Description                                                            | Example                                  |
 | ---------------------- | ---------------------------------------------------------------------- | ---------------------------------------- |
@@ -102,7 +102,7 @@ KSUB supports the following UGE-like directives in job scripts:
 
 ## Linting Rules
 
-KSUB validates job scripts against the following rules to ensure they are correctly formatted and semantically valid:
+ksubmit validates job scripts against the following rules to ensure they are correctly formatted and semantically valid:
 
 | Rule ID | Category  | Description                                                               | Error Code                   |
 | ------- | --------- | ------------------------------------------------------------------------- | ---------------------------- |
@@ -221,7 +221,7 @@ kdel <job-id>
 
 ## Testing
 
-The project uses pytest for testing. Tests are organized in a structure that mirrors the KSUB package structure.
+The project uses pytest for testing. Tests are organized in a structure that mirrors the ksubmit package structure.
 
 ### Running Tests
 

@@ -16,10 +16,10 @@ def project_root():
 
 @pytest.fixture(scope="session")
 def ksub_dir():
-    """Return the ksub directory as a Path object"""
-    return Path(__file__).parent.parent / "ksub"
+    """Return the ksubmit directory as a Path object"""
+    return Path(__file__).parent.parent / "ksubmit"
 
 @pytest.fixture(scope="session")
 def examples_dir():
     """Return the examples directory as a Path object"""
-    return Path(__file__).parent.parent / "ksub" / "examples"
+    return Path(__file__).parent.parent / "ksubmit" / "examples"

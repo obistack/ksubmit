@@ -1,17 +1,17 @@
-# Tests for ksub
+# Tests for ksubmit
 
-This directory contains tests for the ksub package. The tests are organized to mirror the structure of the ksub package.
+This directory contains tests for the ksubmit package. The tests are organized to mirror the structure of the ksubmit package.
 
 ## Structure
 
 ```
 tests/
-├── cli/            # Tests for ksub.cli
-├── config/         # Tests for ksub.config
-├── examples/       # Tests for ksub.examples
-├── kubernetes/     # Tests for ksub.kubernetes
-├── parsers/        # Tests for ksub.parsers
-└── utils/          # Tests for ksub.utils
+├── cli/            # Tests for ksubmit.cli
+├── config/         # Tests for ksubmit.config
+├── examples/       # Tests for ksubmit.examples
+├── kubernetes/     # Tests for ksubmit.kubernetes
+├── parsers/        # Tests for ksubmit.parsers
+└── utils/          # Tests for ksubmit.utils
 ```
 
 ## Running Tests

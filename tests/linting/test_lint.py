@@ -5,7 +5,7 @@ import pytest
 import tempfile
 import os
 from pathlib import Path
-from ksub.linting.lint import lint_script, LintError, LintErrorCode
+from ksubmit.linting.lint import lint_script, LintError, LintErrorCode
 
 def create_temp_script(content):
     """Create a temporary script file with the given content."""

@@ -1,8 +1,8 @@
 import pytest
 import yaml
 from pathlib import Path
-from ksub.parsers.dsl import parse_script
-from ksub.kubernetes.job import generate_job_specs
+from ksubmit.parsers.dsl import parse_script
+from ksubmit.kubernetes.job import generate_job_specs
 
 def test_entrypoint_parsing():
     """Test that entrypoint is correctly parsed from the script"""

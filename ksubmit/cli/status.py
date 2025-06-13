@@ -1,5 +1,5 @@
 """
-Status command implementation for ksub.
+Status command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -29,18 +29,18 @@ def job(
     Get the status of a Kubernetes job.
 
     Examples:
-        ksub status <job-id>
-        ksub status <job-id> --output json
+        ksubmit status <job-id>
+        ksubmit status <job-id> --output json
     """
-    from ksub.kubernetes.client import get_job_status
-    from ksub.utils.formatting import format_output
-    from ksub.config.user_config import validate_namespace
+    from ksubmit.kubernetes.client import get_job_status
+    from ksubmit.utils.formatting import format_output
+    from ksubmit.config.user_config import validate_namespace
 
     # Validate namespace before proceeding
     namespace_valid, error_message = validate_namespace()
     if not namespace_valid:
         console.print(f"[bold red]Error:[/bold red] {error_message}")
-        console.print("[bold yellow]⚠️ ksub cannot continue without a valid namespace. Please run 'ksub init' to set up your configuration.[/bold yellow]")
+        console.print("[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. Please run 'ksubmit init' to set up your configuration.[/bold yellow]")
         raise typer.Exit(1)
 
     console.print(f"[bold]Getting status for job:[/bold] {job_id}")

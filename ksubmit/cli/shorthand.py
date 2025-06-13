@@ -1,35 +1,31 @@
 """
-Shorthand commands for KSUB.
+Shorthand commands for ksubmit.
 
-This module provides shorthand commands for KSUB, following the pattern k<command>.
-These commands are designed to be more concise and easier to use than the full ksub commands.
+This module provides shorthand commands for ksubmit, following the pattern k<command>.
+These commands are designed to be more concise and easier to use than the full ksubmit commands.
 """
+import json
+import logging
+import os
+from pathlib import Path
+from typing import Optional, Dict, Any
+
 import typer
+import yaml
 from rich.console import Console
 from rich.table import Table
-from typing import Optional, List, Dict, Any
-from pathlib import Path
-import os
-import re
-import uuid
-import json
-import yaml
-import logging
-from datetime import datetime
 
-from ksub import __version__
-from ksub.cli import submit, config, logs, list, delete, status, describe, lint
-from ksub.config.user_config import validate_namespace, initialize_config
-from ksub.kubernetes.client import get_job_status, get_job_logs, delete_job, describe_job
-from ksub.utils.formatting import format_output
-from ksub.utils.database import (
-    initialize_database, 
-    store_job_submission_mapping, 
+from ksubmit import __version__
+from ksubmit.cli import submit, config, logs, list, delete, status, describe, lint
+from ksubmit.config.user_config import initialize_config
+from ksubmit.kubernetes.client import get_job_status, delete_job, describe_job
+from ksubmit.utils.database import (
+    initialize_database,
+    store_job_submission_mapping,
     get_jobs_for_submission,
-    update_job_status,
     get_job_submission_info
 )
-from ksub.utils.identifiers import validate_identifier, generate_submission_id
+from ksubmit.utils.identifiers import validate_identifier, generate_submission_id
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -41,40 +37,43 @@ logger.setLevel(logging.INFO)
 
 # Create typer app
 app = typer.Typer(
-    help="KSUB Shorthand Commands - Kubernetes Job Submission Tool",
+    help="ksubmit Shorthand Commands - Kubernetes Job Submission Tool",
     add_completion=True,
 )
 
 # Create rich console for colored output
 console = Console()
 
+
 @app.callback()
 def callback():
     """
-    KSUB Shorthand Commands - Kubernetes Job Submission Tool
+    ksubmit Shorthand Commands - Kubernetes Job Submission Tool
 
-    A set of shorthand commands for KSUB, following the pattern k<command>.
-    These commands are designed to be more concise and easier to use than the full ksub commands.
+    A set of shorthand commands for ksubmit, following the pattern k<command>.
+    These commands are designed to be more concise and easier to use than the full ksubmit commands.
     """
     pass
+
 
 @app.command("version")
 def kversion():
     """
-    Shorthand for 'ksub version' - Print the current version of ksub.
+    Shorthand for 'ksubmit version' - Print the current version of ksubmit.
 
     Examples:
         kversion
     """
-    console.print(f"[bold green]KSUB[/bold green] version: [bold]{__version__}[/bold]")
+    console.print(f"[bold green]ksubmit[/bold green] version: [bold]{__version__}[/bold]")
+
 
 @app.command("init")
 def kinit(
-    namespace: Optional[str] = typer.Option(None, help="Kubernetes namespace to use (defaults to username)"),
-    email: Optional[str] = typer.Option(None, help="User email for job identification"),
+        namespace: Optional[str] = typer.Option(None, help="Kubernetes namespace to use (defaults to username)"),
+        email: Optional[str] = typer.Option(None, help="User email for job identification"),
 ):
     """
-    Shorthand for 'ksub init' - Initialize user config for submitting jobs via Kubernetes.
+    Shorthand for 'ksubmit init' - Initialize user config for submitting jobs via Kubernetes.
 
     Examples:
         kinit
@@ -85,48 +84,49 @@ def kinit(
     else:
         console.print("[bold red]✗[/bold red] Configuration initialization failed.")
 
+
 @app.command("run")
 def krun(
-    script_file: Path = typer.Argument(
-        ...,
-        help="Path to the job script file",
-        exists=True
-    ),
-    dry_run: bool = typer.Option(
-        False,
-        "--dry-run",
-        "-d",
-        help="Generate YAML but don't submit"
-    ),
-    overwrite: bool = typer.Option(
-        False,
-        "--overwrite",
-        help="Overwrite existing directories in destination"
-    ),
-    watch: bool = typer.Option(
-        False,
-        "--watch",
-        "-w",
-        help="Watch job progress after submission"
-    ),
-    timeout: Optional[int] = typer.Option(
-        None,
-        help="Timeout in seconds when watching job"
-    ),
-    output: Optional[str] = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Output format: table (default), json"
-    ),
-    submission_id: Optional[str] = typer.Option(
-        None,
-        "--submission-id",
-        help="Use a specific run ID (for advanced use cases)"
-    ),
+        script_file: Path = typer.Argument(
+            ...,
+            help="Path to the job script file",
+            exists=True
+        ),
+        dry_run: bool = typer.Option(
+            False,
+            "--dry-run",
+            "-d",
+            help="Generate YAML but don't submit"
+        ),
+        overwrite: bool = typer.Option(
+            False,
+            "--overwrite",
+            help="Overwrite existing directories in destination"
+        ),
+        watch: bool = typer.Option(
+            False,
+            "--watch",
+            "-w",
+            help="Watch job progress after submission"
+        ),
+        timeout: Optional[int] = typer.Option(
+            None,
+            help="Timeout in seconds when watching job"
+        ),
+        output: Optional[str] = typer.Option(
+            None,
+            "--output",
+            "-o",
+            help="Output format: table (default), json"
+        ),
+        submission_id: Optional[str] = typer.Option(
+            None,
+            "--submission-id",
+            help="Use a specific run ID (for advanced use cases)"
+        ),
 ):
     """
-    Shorthand for 'ksub run' - Parse a UGER-style shell script and submit jobs.
+    Shorthand for 'ksubmit run' - Parse a UGER-style shell script and submit jobs.
 
     Examples:
         krun my_script.sh
@@ -145,7 +145,8 @@ def krun(
             submission_id = validate_identifier(submission_id)
             if not submission_id.startswith("run-"):
                 console.print(f"[bold red]Error:[/bold red] Invalid run ID format: {submission_id}")
-                console.print("[bold yellow]Run IDs must start with 'run-' followed by at least 8 hex characters.[/bold yellow]")
+                console.print(
+                    "[bold yellow]Run IDs must start with 'run-' followed by at least 8 hex characters.[/bold yellow]")
                 console.print("Example: run-64a7b123abcd")
                 raise typer.Exit(1)
 
@@ -188,6 +189,7 @@ def krun(
         console.print("  • Run with --dry-run to debug: [bold]krun {script_file} --dry-run[/bold]")
         raise typer.Exit(1)
 
+
 def store_job_submission(job_id: str, job_name: str, submission_id: str, metadata: Dict[str, Any], script_file: Path):
     """
     Store job submission information in the database.
@@ -206,13 +208,14 @@ def store_job_submission(job_id: str, job_name: str, submission_id: str, metadat
     # Store in database
     store_job_submission_mapping(job_id, submission_id, job_name, metadata)
 
+
 @app.command("stat")
 def kstat(
-    identifier: Optional[str] = typer.Argument(None, help="Job ID or Run ID to get status for"),
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
+        identifier: Optional[str] = typer.Argument(None, help="Job ID or Run ID to get status for"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
 ):
     """
-    Shorthand for 'ksub status' - Get the status of a Kubernetes job or all jobs in a run.
+    Shorthand for 'ksubmit status' - Get the status of a Kubernetes job or all jobs in a run.
 
     Examples:
         kstat <job-id>
@@ -239,6 +242,7 @@ def kstat(
         console.print("  • To check status of a specific job: [bold]kstat <job-id>[/bold]")
         console.print("  • To check status of all jobs in a run: [bold]kstat <run-id>[/bold]")
         console.print("  • To list all runs: [bold]klist[/bold]")
+
 
 def handle_submission_status(run_id: str, output: Optional[str] = None):
     """
@@ -314,18 +318,21 @@ def handle_submission_status(run_id: str, output: Optional[str] = None):
 
         console.print(table)
 
+
 @app.command("logs")
 def klogs(
-    identifier: str = typer.Argument(..., help="Job ID or Run ID to view logs from"),
-    follow: bool = typer.Option(False, "--follow", "-f", help="Follow logs in real-time"),
-    container: Optional[str] = typer.Option(None, "--container", "-c", help="Specific container to view logs from"),
-    tail: Optional[int] = typer.Option(None, "--tail", "-n", help="Number of lines to show from the end"),
-    job_name: Optional[str] = typer.Option(None, "--job-name", help="Specific job name within a run to view logs from"),
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: text (default), json"),
-    output_file: Optional[Path] = typer.Option(None, "--output-file", help="Path to file where logs will be written"),
+        identifier: str = typer.Argument(..., help="Job ID or Run ID to view logs from"),
+        follow: bool = typer.Option(False, "--follow", "-f", help="Follow logs in real-time"),
+        container: Optional[str] = typer.Option(None, "--container", "-c", help="Specific container to view logs from"),
+        tail: Optional[int] = typer.Option(None, "--tail", "-n", help="Number of lines to show from the end"),
+        job_name: Optional[str] = typer.Option(None, "--job-name",
+                                               help="Specific job name within a run to view logs from"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: text (default), json"),
+        output_file: Optional[Path] = typer.Option(None, "--output-file",
+                                                   help="Path to file where logs will be written"),
 ):
     """
-    Shorthand for 'ksub logs' - Show logs of a completed or running job or all jobs in a run.
+    Shorthand for 'ksubmit logs' - Show logs of a completed or running job or all jobs in a run.
 
     Examples:
         klogs <job-id>
@@ -343,7 +350,8 @@ def klogs(
             handle_submission_logs(identifier, follow, container, tail, job_name, output, output_file)
         else:
             # Handle as job ID
-            logs.logs(job_id=identifier, follow=follow, container=container, tail=tail, output=output, output_file=output_file)
+            logs.logs(job_id=identifier, follow=follow, container=container, tail=tail, output=output,
+                      output_file=output_file)
 
     except typer.Exit as e:
         # Handle typer.Exit exceptions gracefully
@@ -361,9 +369,10 @@ def klogs(
         console.print("  • To list all runs: [bold]klist[/bold]")
         raise typer.Exit(1)
 
-def handle_submission_logs(run_id: str, follow: bool = False, container: Optional[str] = None, 
-                          tail: Optional[int] = None, job_name: Optional[str] = None,
-                          output: Optional[str] = None, output_file: Optional[Path] = None):
+
+def handle_submission_logs(run_id: str, follow: bool = False, container: Optional[str] = None,
+                           tail: Optional[int] = None, job_name: Optional[str] = None,
+                           output: Optional[str] = None, output_file: Optional[Path] = None):
     """
     Handle logs command for a run ID.
 
@@ -401,20 +410,22 @@ def handle_submission_logs(run_id: str, follow: bool = False, container: Optiona
         try:
             # We can't use follow=True for multiple jobs, so only use it if we're looking at a single job
             should_follow = follow and len(jobs) == 1
-            logs.logs(job_id=job_id, follow=should_follow, container=container, tail=tail, output=output, output_file=output_file)
+            logs.logs(job_id=job_id, follow=should_follow, container=container, tail=tail, output=output,
+                      output_file=output_file)
             console.print("\n")
         except Exception as e:
             console.print(f"[yellow]Warning: Could not get logs for job {job_id}: {str(e)}[/yellow]\n")
 
+
 @app.command("desc")
 def kdesc(
-    identifier: str = typer.Argument(..., help="Job ID or Run ID to describe"),
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
-    show_yaml: bool = typer.Option(False, "--yaml", "-y", help="Show full YAML specification"),
-    job_name: Optional[str] = typer.Option(None, "--job-name", help="Specific job name within a run to describe"),
+        identifier: str = typer.Argument(..., help="Job ID or Run ID to describe"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
+        show_yaml: bool = typer.Option(False, "--yaml", "-y", help="Show full YAML specification"),
+        job_name: Optional[str] = typer.Option(None, "--job-name", help="Specific job name within a run to describe"),
 ):
     """
-    Shorthand for 'ksub describe' - Show detailed information about a job or all jobs in a run.
+    Shorthand for 'ksubmit describe' - Show detailed information about a job or all jobs in a run.
 
     Examples:
         kdesc <job-id>
@@ -449,8 +460,9 @@ def kdesc(
         console.print("  • To list all runs: [bold]klist[/bold]")
         raise typer.Exit(1)
 
-def handle_submission_describe(run_id: str, output: Optional[str] = None, 
-                              show_yaml: bool = False, job_name: Optional[str] = None):
+
+def handle_submission_describe(run_id: str, output: Optional[str] = None,
+                               show_yaml: bool = False, job_name: Optional[str] = None):
     """
     Handle describe command for a run ID.
 
@@ -500,7 +512,8 @@ def handle_submission_describe(run_id: str, output: Optional[str] = None,
             for i, job_details in enumerate(details):
                 if i > 0:
                     console.print("\n" + "-" * 80 + "\n")
-                console.print(f"[bold cyan]Run/Job: {job_details.get('job_name', 'N/A')} ({job_details.get('job_id', 'N/A')})[/bold cyan]\n")
+                console.print(
+                    f"[bold cyan]Run/Job: {job_details.get('job_name', 'N/A')} ({job_details.get('job_id', 'N/A')})[/bold cyan]\n")
                 if "yaml" in job_details:
                     console.print(job_details["yaml"])
         else:
@@ -561,7 +574,8 @@ def handle_submission_describe(run_id: str, output: Optional[str] = None,
                 if i > 0:
                     console.print("\n" + "-" * 80 + "\n")
 
-                console.print(f"\n[bold cyan]Detailed information for {job_details.get('job_name', 'N/A')} ({job_details.get('job_id', 'N/A')}):[/bold cyan]\n")
+                console.print(
+                    f"\n[bold cyan]Detailed information for {job_details.get('job_name', 'N/A')} ({job_details.get('job_id', 'N/A')}):[/bold cyan]\n")
 
                 # Create a details table
                 details_table = Table(show_header=False, box=None)
@@ -655,7 +669,8 @@ def handle_submission_describe(run_id: str, output: Optional[str] = None,
 
                     # Display advanced section with raw Kubernetes commands
                     console.print("\n[bold yellow]⚠️ Advanced Debugging Commands (Use with caution):[/bold yellow]")
-                    console.print("[yellow]These commands can be used for advanced debugging but require kubectl and appropriate permissions.[/yellow]")
+                    console.print(
+                        "[yellow]These commands can be used for advanced debugging but require kubectl and appropriate permissions.[/yellow]")
 
                     # Create a table for advanced commands
                     advanced_table = Table(show_header=True, box=None)
@@ -716,15 +731,16 @@ def handle_submission_describe(run_id: str, output: Optional[str] = None,
 
                     console.print(resource_table)
 
+
 @app.command("del")
 def kdel(
-    identifier: str = typer.Argument(..., help="Job ID or Run ID to delete"),
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: text (default), json, yaml"),
-    job_name: Optional[str] = typer.Option(None, "--job-name", help="Specific job name within a run to delete"),
-    force: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation"),
+        identifier: str = typer.Argument(..., help="Job ID or Run ID to delete"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: text (default), json, yaml"),
+        job_name: Optional[str] = typer.Option(None, "--job-name", help="Specific job name within a run to delete"),
+        force: bool = typer.Option(False, "--force", "-f", help="Force deletion without confirmation"),
 ):
     """
-    Shorthand for 'ksub delete' - Delete a Kubernetes job or all jobs in a run.
+    Shorthand for 'ksubmit delete' - Delete a Kubernetes job or all jobs in a run.
 
     Examples:
         kdel <job-id>
@@ -759,8 +775,9 @@ def kdel(
         console.print("  • To list all runs: [bold]klist[/bold]")
         raise typer.Exit(1)
 
-def handle_submission_delete(run_id: str, output: Optional[str] = None, 
-                            job_name: Optional[str] = None, force: bool = False):
+
+def handle_submission_delete(run_id: str, output: Optional[str] = None,
+                             job_name: Optional[str] = None, force: bool = False):
     """
     Handle delete command for a run ID.
 
@@ -820,15 +837,17 @@ def handle_submission_delete(run_id: str, output: Optional[str] = None,
     else:
         console.print(f"[bold green]All jobs in run {run_id} have been processed.[/bold green]")
 
+
 @app.command("ls")
 def kls(
-    status_filter: Optional[str] = typer.Option(None, "--status", "-s", help="Filter by job status (running, completed, failed)"),
-    label: Optional[str] = typer.Option(None, "--label", "-l", help="Filter by label (format: key=value)"),
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
-    run_id: Optional[str] = typer.Option(None, "--run", "-r", help="Filter by run ID"),
+        status_filter: Optional[str] = typer.Option(None, "--status", "-s",
+                                                    help="Filter by job status (running, completed, failed)"),
+        label: Optional[str] = typer.Option(None, "--label", "-l", help="Filter by label (format: key=value)"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
+        run_id: Optional[str] = typer.Option(None, "--run", "-r", help="Filter by run ID"),
 ):
     """
-    Shorthand for 'ksub list' - List all jobs or jobs in a run.
+    Shorthand for 'ksubmit list' - List all jobs or jobs in a run.
 
     Examples:
         kls
@@ -842,7 +861,8 @@ def kls(
             run_id = validate_identifier(run_id)
             if not run_id.startswith("run-"):
                 console.print(f"[bold red]Error:[/bold red] Invalid run ID format: {run_id}")
-                console.print("[bold yellow]Run IDs must start with 'run-' followed by at least 8 hex characters.[/bold yellow]")
+                console.print(
+                    "[bold yellow]Run IDs must start with 'run-' followed by at least 8 hex characters.[/bold yellow]")
                 console.print("Example: run-64a7b123abcd")
                 return  # Return instead of raising an exception for graceful exit
 
@@ -868,6 +888,7 @@ def kls(
         console.print("  • To list jobs in a specific run: [bold]kls --run <run-id>[/bold]")
         console.print("  • To list all runs: [bold]klist[/bold]")
         raise typer.Exit(1)
+
 
 def handle_submission_list(run_id: str, status_filter: Optional[str] = None, output: Optional[str] = None):
     """
@@ -931,10 +952,11 @@ def handle_submission_list(run_id: str, status_filter: Optional[str] = None, out
 
         console.print(table)
 
+
 @app.command("list")
 def klist(
-    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
-    limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit the number of runs to show"),
+        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
+        limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit the number of runs to show"),
 ):
     """
     List all runs and their associated jobs.
@@ -946,7 +968,7 @@ def klist(
     """
     try:
         # Get all submissions from the database
-        from ksub.utils.database import get_all_submissions
+        from ksubmit.utils.database import get_all_submissions
         submissions = get_all_submissions()
 
         # Apply limit if specified
@@ -1001,18 +1023,19 @@ def klist(
         # Log detailed error for debugging
         logger.error(f"Error in klist: {str(e)}", exc_info=True)
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Initialize ksub if you haven't: [bold]kinit[/bold]")
+        console.print("  • Initialize ksubmit if you haven't: [bold]kinit[/bold]")
         console.print("  • Submit a job first: [bold]krun <script.sh>[/bold]")
         raise typer.Exit(1)
 
+
 @app.command("lint")
 def klint(
-    script_path: str = typer.Argument(..., help="Path to the UGER-style shell script to lint"),
-    strict: bool = typer.Option(False, "--strict", help="Treat warnings as errors"),
-    json_output: bool = typer.Option(False, "--json", help="Output results in JSON format"),
+        script_path: str = typer.Argument(..., help="Path to the UGER-style shell script to lint"),
+        strict: bool = typer.Option(False, "--strict", help="Treat warnings as errors"),
+        json_output: bool = typer.Option(False, "--json", help="Output results in JSON format"),
 ):
     """
-    Shorthand for 'ksub lint' - Lint job scripts for errors.
+    Shorthand for 'ksubmit lint' - Lint job scripts for errors.
 
     Examples:
         klint my_script.sh
@@ -1021,14 +1044,15 @@ def klint(
     """
     lint.lint(script_path=script_path, strict=strict, json_output=json_output)
 
+
 @app.command("config")
 def kconfig(
-    action: str = typer.Argument(..., help="Action to perform: get, set, list, reset"),
-    key: Optional[str] = typer.Argument(None, help="Config key to get or set"),
-    value: Optional[str] = typer.Argument(None, help="Value to set for the given key"),
+        action: str = typer.Argument(..., help="Action to perform: get, set, list, reset"),
+        key: Optional[str] = typer.Argument(None, help="Config key to get or set"),
+        value: Optional[str] = typer.Argument(None, help="Value to set for the given key"),
 ):
     """
-    Shorthand for 'ksub config' - Manage ksub configuration.
+    Shorthand for 'ksubmit config' - Manage ksubmit configuration.
 
     Examples:
         kconfig list
@@ -1054,6 +1078,7 @@ def kconfig(
         console.print(f"[bold red]Error:[/bold red] Unknown action: {action}")
         console.print("Valid actions: get, set, list, reset")
         raise typer.Exit(1)
+
 
 def main():
     """
@@ -1089,6 +1114,7 @@ def main():
     else:
         # Otherwise, run the full app
         app()
+
 
 if __name__ == "__main__":
     main()

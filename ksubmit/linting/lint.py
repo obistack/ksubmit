@@ -1,5 +1,5 @@
 """
-Linting module for ksub - validates shell scripts with #$ directives.
+Linting module for ksubmit - validates shell scripts with #$ directives.
 """
 import re
 import os

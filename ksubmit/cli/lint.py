@@ -1,5 +1,5 @@
 """
-Lint command implementation for ksub.
+Lint command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -38,10 +38,10 @@ def lint(
     and ensures the script follows the expected format.
 
     Examples:
-        ksub lint script.sh
-        ksub lint script.sh --output json
+        ksubmit lint script.sh
+        ksubmit lint script.sh --output json
     """
-    from ksub.linting.lint import lint_script, LintError
+    from ksubmit.linting.lint import lint_script, LintError
     import json
 
     console.print(f"[bold]Linting script:[/bold] {script_file}")

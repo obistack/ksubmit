@@ -1,4 +1,4 @@
 """
-Parsers package for ksub - handles parsing job scripts and UGE-like directives.
+Parsers package for ksubmit - handles parsing job scripts and UGE-like directives.
 """
 

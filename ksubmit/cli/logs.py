@@ -1,5 +1,5 @@
 """
-Logs command implementation for ksub.
+Logs command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -23,18 +23,18 @@ def logs(
     Show logs of a completed or running job. Supports subcontainers.
 
     Examples:
-        ksub logs -j <job-id>
-        ksub logs --job <job-id> --follow
-        ksub logs -j <job-id> --output-file logs.txt
+        ksubmit logs -j <job-id>
+        ksubmit logs --job <job-id> --follow
+        ksubmit logs -j <job-id> --output-file logs.txt
     """
-    from ksub.kubernetes.client import get_job_logs
-    from ksub.config.user_config import validate_namespace
+    from ksubmit.kubernetes.client import get_job_logs
+    from ksubmit.config.user_config import validate_namespace
 
     # Validate namespace before proceeding
     namespace_valid, error_message = validate_namespace()
     if not namespace_valid:
         console.print(f"[bold red]Error:[/bold red] {error_message}")
-        console.print("[bold yellow]⚠️ ksub cannot continue without a valid namespace. Please run 'ksub init' to set up your configuration.[/bold yellow]")
+        console.print("[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. Please run 'ksubmit init' to set up your configuration.[/bold yellow]")
         raise typer.Exit(1)
 
     console.print(f"[bold]Getting logs for job:[/bold] {job_id}")

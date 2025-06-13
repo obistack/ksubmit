@@ -1,6 +1,6 @@
 import pytest
 import re
-from ksub.kubernetes.job import generate_job_name
+from ksubmit.kubernetes.job import generate_job_name
 
 def test_default_job_name():
     """Test job name generation with default 'job' name"""

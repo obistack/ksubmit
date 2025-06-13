@@ -1,17 +1,14 @@
 #!/bin/bash
-#$ -N global-setup
-#$ -v REFGENOME=hg38
-#$ -mount data=./data
-#$ -mount code=./pipeline
-
-#fffdfd
+# Example of a multi-mount job using ksubmit
 #$ -N pepatac-run
 #$ -I docker.io/continuumio/miniconda3
 #$ -l h_vmem=16G
 #$ -l h_rt=04:00:00
 #$ -pe smp 4
-#$ -file ./pipeline/env.yaml
 #$ -entrypoint bash
+#$ -v REFGENOME=hg38
+#$ -mount data=./data
+#$ -mount code=./pipeline
 conda env create -f /mnt/code/env.yaml || true
 conda activate pepatac
 python /mnt/code/run.py --genome $REFGENOME --input /mnt/data/sample.tsv

@@ -1,5 +1,5 @@
 """
-Kubernetes client wrapper module for ksub.
+Kubernetes client wrapper module for ksubmit.
 """
 import time
 from typing import Dict, List, Any, Optional
@@ -9,7 +9,7 @@ from kubernetes import client, config, watch
 from kubernetes.client.rest import ApiException
 from rich.console import Console
 
-from ksub.config.user_config import get_namespace, get_context
+from ksubmit.config.user_config import get_namespace, get_context
 
 console = Console()
 
@@ -19,15 +19,15 @@ def initialize_kubernetes_client(context: Optional[str] = None) -> None:
     Initialize the Kubernetes client.
 
     Tries to load kube config from default location, falls back to in-cluster config.
-    If no context is provided, uses the context from the ksub config file.
+    If no context is provided, uses the context from the ksubmit config file.
 
     Args:
-        context: Optional Kubernetes context to use. If None, uses the context from ksub config.
+        context: Optional Kubernetes context to use. If None, uses the context from ksubmit config.
 
     Raises:
         RuntimeError: If Kubernetes client cannot be configured
     """
-    # If no context is provided, use the one from ksub config
+    # If no context is provided, use the one from ksubmit config
     if context is None:
         context = get_context()
     try:
@@ -427,7 +427,7 @@ def check_namespace_exists(namespace: str) -> tuple[bool, Optional[str]]:
     except ApiException as e:
         error_message = str(e)
         if e.status == 404:
-            error_message = f"Namespace '{namespace}' does not exist. Please run 'ksub init' to create it."
+            error_message = f"Namespace '{namespace}' does not exist. Please run 'ksubmit init' to create it."
         elif e.status == 403:
             error_message = f"You do not have permission to access namespace '{namespace}'. Please use a namespace you have access to or contact your cluster administrator."
 
@@ -474,12 +474,12 @@ def check_namespace_label(namespace: str, label_key: str, label_value: str) -> t
         return False, error_message
 
 
-def check_admin_storage_transfer_pod(admin_namespace: str = "ksub-admin") -> tuple[bool, Optional[str]]:
+def check_admin_storage_transfer_pod(admin_namespace: str = "ksubmit-admin") -> tuple[bool, Optional[str]]:
     """
     Check if the admin storage transfer pod exists and is running.
 
     Args:
-        admin_namespace: Name of the admin namespace (default: ksub-admin)
+        admin_namespace: Name of the admin namespace (default: ksubmit-admin)
 
     Returns:
         Tuple of (exists, error_message):
@@ -507,7 +507,7 @@ def check_admin_storage_transfer_pod(admin_namespace: str = "ksub-admin") -> tup
         # Check if admin storage transfer pod exists
         pods = core_api.list_namespaced_pod(
             namespace=admin_namespace,
-            label_selector="app=ksub-storage-transfer"
+            label_selector="app=ksubmit-storage-transfer"
         )
 
         if not pods.items:
@@ -557,7 +557,7 @@ def check_shared_volume_mounts(namespace: str) -> tuple[bool, Optional[str]]:
         # Check if shared volume mounts exist
         pvcs = core_api.list_namespaced_persistent_volume_claim(
             namespace=namespace,
-            label_selector="ksub/role=scratch"
+            label_selector="ksubmit/role=scratch"
         )
 
         if not pvcs.items:
@@ -611,7 +611,7 @@ def create_namespace(namespace: str) -> tuple[bool, Optional[str]]:
             error_message = f"You do not have permission to create namespace '{namespace}' in this cluster. Please contact your cluster administrator or use a namespace you have access to."
             console.print(f"[bold red]Error creating namespace:[/bold red] {error_message}")
             console.print(
-                "[bold yellow]⚠️ ksub cannot continue without a valid namespace. No other commands will work.[/bold yellow]")
+                "[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. No other commands will work.[/bold yellow]")
         else:
             console.print(f"[bold red]Error creating namespace:[/bold red] {error_message}")
 
@@ -707,12 +707,12 @@ def list_jobs(
                 # Calculate age
                 if completion_time:
                     duration_seconds = (completion_time - created_at).total_seconds()
-                    from ksub.utils.formatting import format_duration
+                    from ksubmit.utils.formatting import format_duration
                     job_info["duration"] = format_duration(int(duration_seconds))
 
                 # Calculate age from creation to now
                 age_seconds = (time.time() - created_at.timestamp())
-                from ksub.utils.formatting import format_duration
+                from ksubmit.utils.formatting import format_duration
                 job_info["age"] = format_duration(int(age_seconds))
             job_info["created_at"] = created_at
             if completion_time:
@@ -740,7 +740,7 @@ def update_job_status_in_storage(job_info: Dict[str, Any]) -> bool:
     Returns:
         True if successful, False otherwise
     """
-    from ksub.utils.storage import update_job_status, get_job
+    from ksubmit.utils.storage import update_job_status, get_job
 
     job_id = job_info["job_id"]
     status = job_info["status"]
@@ -758,7 +758,7 @@ def update_job_status_in_storage(job_info: Dict[str, Any]) -> bool:
             return True
         else:
             # Job doesn't exist in local storage, store it
-            from ksub.utils.storage import store_job
+            from ksubmit.utils.storage import store_job
 
             # Extract necessary information for storage
             store_job(

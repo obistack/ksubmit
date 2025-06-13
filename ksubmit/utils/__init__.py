@@ -1,3 +1,3 @@
 """
-Utility package for ksub - contains formatting and storage utilities.
+Utility package for ksubmit - contains formatting and storage utilities.
 """

@@ -1,3 +1,3 @@
 """
-Configuration package for ksub - handles user configuration.
+Configuration package for ksubmit - handles user configuration.
 """

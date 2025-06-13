@@ -1,5 +1,5 @@
 """
-Formatting utilities for ksub - handles colored output and table formatting.
+Formatting utilities for ksubmit - handles colored output and table formatting.
 """
 from rich.console import Console
 from rich.table import Table

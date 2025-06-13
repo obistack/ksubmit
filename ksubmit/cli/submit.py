@@ -1,5 +1,5 @@
 """
-Submit command implementation for ksub.
+Submit command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -63,21 +63,21 @@ def submit(
     Returns:
         A dictionary containing the submitted jobs, failed jobs, and job specs
     """
-    from ksub.parsers.dsl import parse_script
-    from ksub.kubernetes.job import generate_job_specs, submit_jobs
-    from ksub.config.user_config import validate_namespace
+    from ksubmit.parsers.dsl import parse_script
+    from ksubmit.kubernetes.job import generate_job_specs, submit_jobs
+    from ksubmit.config.user_config import validate_namespace
 
     # Validate namespace before proceeding
     namespace_valid, error_message = validate_namespace()
     if not namespace_valid:
         console.print(f"[bold red]Error:[/bold red] {error_message}")
-        console.print("[bold yellow]⚠️ ksub cannot continue without a valid namespace. Please run 'ksub init' to set up your configuration.[/bold yellow]")
+        console.print("[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. Please run 'ksubmit init' to set up your configuration.[/bold yellow]")
         raise typer.Exit(1)
 
     console.print(f"[bold]Processing script:[/bold] {script_file}")
 
     # Lint the script file before parsing
-    from ksub.linting.lint import lint_script
+    from ksubmit.linting.lint import lint_script
     all_lint_results = lint_script(script_file)
 
     # Filter out informational messages (those with error_code starting with "INFO_")

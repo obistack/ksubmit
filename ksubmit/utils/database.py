@@ -1,7 +1,7 @@
 """
-Database utilities for KSUB.
+Database utilities for ksubmit.
 
-This module provides functions for interacting with the KSUB database,
+This module provides functions for interacting with the ksubmit database,
 which is used to store job-to-submission mappings and other metadata.
 """
 import os
@@ -12,13 +12,13 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 def get_database_path() -> Path:
-    """Get the path to the KSUB database file."""
-    ksub_dir = Path.home() / ".ksub"
+    """Get the path to the ksubmit database file."""
+    ksub_dir = Path.home() / ".ksubmit"
     ksub_dir.mkdir(exist_ok=True)
-    return ksub_dir / "ksub.db"
+    return ksub_dir / "ksubmit.db"
 
 def get_database_connection() -> sqlite3.Connection:
-    """Get a connection to the KSUB database."""
+    """Get a connection to the ksubmit database."""
     db_path = get_database_path()
     conn = sqlite3.connect(str(db_path))
     # Enable foreign keys
@@ -26,7 +26,7 @@ def get_database_connection() -> sqlite3.Connection:
     return conn
 
 def initialize_database() -> None:
-    """Initialize the KSUB database schema."""
+    """Initialize the ksubmit database schema."""
     conn = get_database_connection()
     cursor = conn.cursor()
 

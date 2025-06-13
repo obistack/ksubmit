@@ -1,5 +1,5 @@
 """
-Kubernetes job generation and management module for ksub.
+Kubernetes job generation and management module for ksubmit.
 """
 import yaml
 import uuid
@@ -8,9 +8,9 @@ from typing import Dict, List, Any, Optional, Tuple
 from pathlib import Path
 from rich.console import Console
 
-from ksub.parsers.dsl import JobBlock
-from ksub.config.user_config import get_namespace, get_email, get_image_pull_secret, get_username
-from ksub.utils.storage import copy_to_storage_transfer_pod
+from ksubmit.parsers.dsl import JobBlock
+from ksubmit.config.user_config import get_namespace, get_email, get_image_pull_secret, get_username
+from ksubmit.utils.storage import copy_to_storage_transfer_pod
 
 console = Console()
 
@@ -155,7 +155,7 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                 "name": job_name,
                 "namespace": namespace,
                 "labels": {
-                    "app": "ksub",
+                    "app": "ksubmit",
                     "owner": sanitize_label_value(email or "unknown")
                 }
             },
@@ -168,7 +168,7 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                 "template": {
                     "metadata": {
                         "labels": {
-                            "app": "ksub",
+                            "app": "ksubmit",
                             "job-name": job_name
                         }
                     },
@@ -226,7 +226,7 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                         volumes.append({
                             "name": volume_name,
                             "persistentVolumeClaim": {
-                                "claimName": "ksub-scratch-cloud-pvc",
+                                "claimName": "ksubmit-scratch-cloud-pvc",
                                 "readOnly": False
                             }
                         })
@@ -293,7 +293,7 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                     volumes.append({
                         "name": volume_name,
                         "persistentVolumeClaim": {
-                            "claimName": "ksub-scratch-cloud-pvc",
+                            "claimName": "ksubmit-scratch-cloud-pvc",
                             "readOnly": False
                         }
                     })
@@ -329,8 +329,8 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                     bucket_path = parts[1] if len(parts) > 1 else ""
 
                     # Create a unique name for the PV and PVC
-                    pv_name = f"ksub-remote-{namespace}-{mount_name}"
-                    pvc_name = f"ksub-remote-{mount_name}-pvc"
+                    pv_name = f"ksubmit-remote-{namespace}-{mount_name}"
+                    pvc_name = f"ksubmit-remote-{mount_name}-pvc"
 
                     # Create PV for the GCS bucket
                     pv = {
@@ -339,8 +339,8 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                         "metadata": {
                             "name": pv_name,
                             "labels": {
-                                "ksub/role": "remote-mount",
-                                "ksub/user": namespace
+                                "ksubmit/role": "remote-mount",
+                                "ksubmit/user": namespace
                             }
                         },
                         "spec": {
@@ -371,7 +371,7 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
                             "name": pvc_name,
                             "namespace": namespace,
                             "labels": {
-                                "ksub/role": "remote-mount"
+                                "ksubmit/role": "remote-mount"
                             }
                         },
                         "spec": {
@@ -557,8 +557,8 @@ def generate_job_specs(job_blocks: List[JobBlock], dry_run: bool = False, overwr
             # Store remote mount information as JSON in annotations
             remote_mounts_info = {}
             for mount_name, gcs_uri in job_block.remote_mounts.items():
-                pv_name = f"ksub-remote-{namespace}-{mount_name}"
-                pvc_name = f"ksub-remote-{mount_name}-pvc"
+                pv_name = f"ksubmit-remote-{namespace}-{mount_name}"
+                pvc_name = f"ksubmit-remote-{mount_name}-pvc"
                 remote_mounts_info[mount_name] = {
                     "uri": gcs_uri,
                     "pv": pv_name,
@@ -589,7 +589,7 @@ def submit_jobs(job_specs: Dict[str, str]) -> Dict[str, Any]:
     """
     from kubernetes import client, config
     from kubernetes.client.rest import ApiException
-    from ksub.utils.storage import store_job
+    from ksubmit.utils.storage import store_job
 
     # Load Kubernetes configuration
     try:

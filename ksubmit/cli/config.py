@@ -1,5 +1,5 @@
 """
-Configuration module for ksub.
+Configuration module for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -7,15 +7,15 @@ from typing import Optional
 import os
 from pathlib import Path
 import yaml
-from ksub.config.constants import CONFIG_DIR, CONFIG_FILE, SECRETS_FILE
+from ksubmit.config.constants import CONFIG_DIR, CONFIG_FILE, SECRETS_FILE
 
-app = typer.Typer(help="Manage ksub configuration")
+app = typer.Typer(help="Manage ksubmit configuration")
 console = Console()
 
 
 @app.callback()
 def callback():
-    """Manage ksub configuration."""
+    """Manage ksubmit configuration."""
     pass
 
 
@@ -23,7 +23,7 @@ def callback():
 def show():
     """View stored user configuration."""
     if not CONFIG_FILE.exists():
-        console.print("[yellow]No configuration found. Run 'ksub init' to create one.[/yellow]")
+        console.print("[yellow]No configuration found. Run 'ksubmit init' to create one.[/yellow]")
         return
 
     try:
@@ -104,7 +104,7 @@ def set(
 
     The name will be slugified (converted to lowercase, trimmed).
     """
-    from ksub.config.user_config import update_config, slugify_key
+    from ksubmit.config.user_config import update_config, slugify_key
 
     # Slugify the key name
     key = slugify_key(name)

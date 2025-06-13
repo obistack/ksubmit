@@ -1,4 +1,4 @@
 """
-Kubernetes package for ksub - handles Kubernetes API interactions.
+Kubernetes package for ksubmit - handles Kubernetes API interactions.
 """
 

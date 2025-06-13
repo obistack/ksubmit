@@ -7,8 +7,8 @@
 #$ -v MSG="Testing mount overwrite"
 #$ -ttl 600
 #$ -mount docs=./docs
-#$ -mount user=./ksub/admin/user --overwrite
-#$ -mount test=./ksub/admin/cluster
+#$ -mount user=./ksubmit/admin/user --overwrite
+#$ -mount test=./ksubmit/admin/cluster
 #$ -remote-mount test=gs://my-bucket/test
 
 echo "$MSG"

@@ -1,2 +1,2 @@
-"""CLI package for ksub commands."""
+"""CLI package for ksubmit commands."""
 

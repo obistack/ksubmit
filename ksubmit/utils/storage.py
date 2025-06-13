@@ -1,5 +1,5 @@
 """
-Storage module for ksub - provides DuckDB interface for job tracking and file transfer utilities.
+Storage module for ksubmit - provides DuckDB interface for job tracking and file transfer utilities.
 """
 import os
 import time
@@ -15,12 +15,12 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from kubernetes.stream import stream
 
-from ksub.kubernetes.client import check_admin_storage_transfer_pod, initialize_kubernetes_client
+from ksubmit.kubernetes.client import check_admin_storage_transfer_pod, initialize_kubernetes_client
 
 console = Console()
 
 # Define storage location
-STORAGE_DIR = Path.home() / ".ksub" / "data"
+STORAGE_DIR = Path.home() / ".ksubmit" / "data"
 DB_FILE = STORAGE_DIR / "jobs.duckdb"
 
 
@@ -198,12 +198,12 @@ def get_job(job_id: str) -> Optional[Dict[str, Any]]:
             completed_at_local = completed_at.replace(tzinfo=datetime.timezone.utc).astimezone(local_tz)
             job["completed_at"] = completed_at_local
             duration_seconds = (completed_at_local - created_at_local).total_seconds()
-            from ksub.utils.formatting import format_duration
+            from ksubmit.utils.formatting import format_duration
             job["duration"] = format_duration(int(duration_seconds))
 
         # Calculate age from creation to now
         age_seconds = (time.time() - created_at.timestamp())
-        from ksub.utils.formatting import format_duration
+        from ksubmit.utils.formatting import format_duration
         job["age"] = format_duration(int(age_seconds))
 
     return job
@@ -295,12 +295,12 @@ def list_jobs(
                 completed_at_local = completed_at.replace(tzinfo=datetime.timezone.utc).astimezone(local_tz)
                 job["completed_at"] = completed_at_local
                 duration_seconds = (completed_at_local - created_at_local).total_seconds()
-                from ksub.utils.formatting import format_duration
+                from ksubmit.utils.formatting import format_duration
                 job["duration"] = format_duration(int(duration_seconds))
 
             # Calculate age from creation to now
             age_seconds = (time.time() - created_at.timestamp())
-            from ksub.utils.formatting import format_duration
+            from ksubmit.utils.formatting import format_duration
             job["age"] = format_duration(int(age_seconds))
 
         jobs.append(job)
@@ -373,8 +373,8 @@ def get_running_storage_transfer_pod() -> Tuple[bool, Optional[str], Optional[st
     try:
         # Get the storage transfer pod
         pods = core_api.list_namespaced_pod(
-            namespace="ksub-admin",
-            label_selector="app=ksub-storage-transfer"
+            namespace="ksubmit-admin",
+            label_selector="app=ksubmit-storage-transfer"
         )
 
         if not pods.items:
@@ -412,7 +412,7 @@ def copy_to_storage_transfer_pod(source_dir: str, username: str, code_dir_name: 
         - success: True if successful, False otherwise
         - error_message: Error message if failed, None if successful
     """
-    from ksub.config.user_config import get_max_folder_size
+    from ksubmit.config.user_config import get_max_folder_size
 
     # Check if source directory exists
     source_path = Path(source_dir)
@@ -429,7 +429,7 @@ def copy_to_storage_transfer_pod(source_dir: str, username: str, code_dir_name: 
     # Check if directory size exceeds limit
     if dir_size_mb > max_folder_size:
         console.print(f"[bold red]Error:[/bold red] Directory size ({dir_size_mb:.2f}MB) exceeds the maximum allowed size ({max_folder_size}MB)")
-        console.print(f"[yellow]You can increase the limit by editing the 'max_folder_size' value in {Path.cwd() / '.ksub' / 'config.yaml'}[/yellow]")
+        console.print(f"[yellow]You can increase the limit by editing the 'max_folder_size' value in {Path.cwd() / '.ksubmit' / 'config.yaml'}[/yellow]")
         console.print(f"[yellow]Warning: Increasing the limit may result in slower processing times.[/yellow]")
         return False, f"Directory size exceeds maximum allowed size"
 
@@ -453,7 +453,7 @@ def copy_to_storage_transfer_pod(source_dir: str, username: str, code_dir_name: 
             return False, error_message
 
         # Check if directory exists - use a more robust approach without shell=True
-        check_dir_cmd = ["kubectl", "exec", "-n", "ksub-admin", pod_name, "--", "test", "-d", target_dir]
+        check_dir_cmd = ["kubectl", "exec", "-n", "ksubmit-admin", pod_name, "--", "test", "-d", target_dir]
         result = subprocess.run(check_dir_cmd, capture_output=True, text=True)
 
         # test -d returns 0 if directory exists, non-zero otherwise
@@ -478,13 +478,13 @@ def copy_to_storage_transfer_pod(source_dir: str, username: str, code_dir_name: 
         return False, error_message
 
     # Create target directory inside pod
-    create_dir_cmd = ["kubectl", "exec", "-n", "ksub-admin", pod_name, "--", "mkdir", "-p", target_dir]
+    create_dir_cmd = ["kubectl", "exec", "-n", "ksubmit-admin", pod_name, "--", "mkdir", "-p", target_dir]
     result = subprocess.run(create_dir_cmd, capture_output=True, text=True)
     if result.returncode != 0:
         return False, f"Failed to create target dir in pod: {result.stderr}"
 
     # Copy files using kubectl cp with source_dir/. to copy contents
-    copy_cmd = ["kubectl", "cp", f"{source_dir}/.", f"ksub-admin/{pod_name}:{target_dir}"]
+    copy_cmd = ["kubectl", "cp", f"{source_dir}/.", f"ksubmit-admin/{pod_name}:{target_dir}"]
     console.print(f"[yellow]Copying files from [bold]{source_dir}[/bold] to pod...[/yellow]")
     result = subprocess.run(copy_cmd, capture_output=True, text=True)
     if result.returncode != 0:

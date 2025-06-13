@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: ksub-scratch-cloud-pv
+  name: ksubmit-scratch-cloud-pv
   labels:
-    ksub/role: shared
+    ksubmit/role: shared
 spec:
   capacity:
     storage: 1000Ti
@@ -24,10 +24,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ksub-scratch-cloud-pvc
-  namespace: ksub-admin
+  name: ksubmit-scratch-cloud-pvc
+  namespace: ksubmit-admin
   labels:
-    ksub/role: scratch
+    ksubmit/role: scratch
 spec:
   accessModes:
     - ReadWriteMany
@@ -35,4 +35,4 @@ spec:
   resources:
     requests:
       storage: 1Ti
-  volumeName: ksub-scratch-cloud-pv
+  volumeName: ksubmit-scratch-cloud-pv

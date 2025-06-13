@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ksub-storage-transfer
-  namespace: ksub-admin
+  name: ksubmit-storage-transfer
+  namespace: ksubmit-admin
   labels:
-    app: ksub-storage-transfer
-    purpose: ksub-infrastructure
+    app: ksubmit-storage-transfer
+    purpose: ksubmit-infrastructure
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: ksub-storage-transfer
+      app: ksubmit-storage-transfer
   template:
     metadata:
       labels:
-        app: ksub-storage-transfer
-        purpose: ksub-infrastructure
+        app: ksubmit-storage-transfer
+        purpose: ksubmit-infrastructure
       annotations:
         gke-gcsfuse/volumes: "true"
     spec:
@@ -42,4 +42,4 @@ spec:
       volumes:
       - name: scratch-space-cloud-pvc
         persistentVolumeClaim:
-          claimName: ksub-scratch-cloud-pvc
+          claimName: ksubmit-scratch-cloud-pvc

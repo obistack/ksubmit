@@ -1,6 +1,6 @@
-# Building ksub as a Single Executable with PyInstaller
+# Building ksubmit as a Single Executable with PyInstaller
 
-This guide explains how to build ksub as a single executable that supports all shorthand commands (krun, kstat, etc.) on all major platforms.
+This guide explains how to build ksubmit as a single executable that supports all shorthand commands (krun, kstat, etc.) on all major platforms.
 
 ## Prerequisites
 
@@ -12,16 +12,16 @@ pip install pyinstaller
 
 ## Building the Executable
 
-1. Navigate to the ksub project directory:
+1. Navigate to the ksubmit project directory:
 
 ```bash
-cd /path/to/ksub
+cd /path/to/ksubmit
 ```
 
 2. Build the executable using the provided spec file:
 
 ```bash
-pyinstaller ksub.spec
+pyinstaller ksubmit.spec
 ```
 
 This will create a single executable file in the `dist` directory.
@@ -54,10 +54,10 @@ Add the `dist/bin` directory to your PATH to use the shorthand commands:
 
 ```bash
 # Temporary (for current session only)
-export PATH="$PATH:/path/to/ksub/dist/bin"
+export PATH="$PATH:/path/to/ksubmit/dist/bin"
 
 # Permanent (add to your .bashrc, .zshrc, etc.)
-echo 'export PATH="$PATH:/path/to/ksub/dist/bin"' >> ~/.bashrc
+echo 'export PATH="$PATH:/path/to/ksubmit/dist/bin"' >> ~/.bashrc
 ```
 
 ## How It Works
@@ -82,13 +82,13 @@ pip install -r requirements.txt
 2. Try building with the `--clean` flag to start fresh:
 
 ```bash
-pyinstaller --clean ksub.spec
+pyinstaller --clean ksubmit.spec
 ```
 
 3. Check the PyInstaller build logs for any errors:
 
 ```bash
-cat build/ksub/warn-ksub.txt
+cat build/ksubmit/warn-ksubmit.txt
 ```
 
 ## Distribution

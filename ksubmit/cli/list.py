@@ -1,5 +1,5 @@
 """
-List command implementation for ksub.
+List command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -67,16 +67,16 @@ def jobs(
     When fetching from Kubernetes, job status is automatically updated in local storage
     to ensure historical data is preserved. This can be disabled with --no-update-storage.
     """
-    from ksub.utils.storage import list_jobs as list_local_jobs
-    from ksub.kubernetes.client import list_jobs as list_k8s_jobs
-    from ksub.utils.formatting import format_output
-    from ksub.config.user_config import get_namespace, get_email, validate_namespace
+    from ksubmit.utils.storage import list_jobs as list_local_jobs
+    from ksubmit.kubernetes.client import list_jobs as list_k8s_jobs
+    from ksubmit.utils.formatting import format_output
+    from ksubmit.config.user_config import get_namespace, get_email, validate_namespace
 
     # Validate namespace before proceeding
     namespace_valid, error_message = validate_namespace()
     if not namespace_valid:
         console.print(f"[bold red]Error:[/bold red] {error_message}")
-        console.print("[bold yellow]⚠️ ksub cannot continue without a valid namespace. Please run 'ksub init' to set up your configuration.[/bold yellow]")
+        console.print("[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. Please run 'ksubmit init' to set up your configuration.[/bold yellow]")
         raise typer.Exit(1)
 
     # Get current namespace and email

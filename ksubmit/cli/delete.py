@@ -1,5 +1,5 @@
 """
-Delete command implementation for ksub.
+Delete command implementation for ksubmit.
 """
 import typer
 from rich.console import Console
@@ -29,18 +29,18 @@ def job(
     Delete a Kubernetes job.
 
     Examples:
-        ksub delete <job-id>
-        ksub delete <job-id> --output json
+        ksubmit delete <job-id>
+        ksubmit delete <job-id> --output json
     """
-    from ksub.kubernetes.client import delete_job
-    from ksub.utils.formatting import format_output
-    from ksub.config.user_config import validate_namespace
+    from ksubmit.kubernetes.client import delete_job
+    from ksubmit.utils.formatting import format_output
+    from ksubmit.config.user_config import validate_namespace
 
     # Validate namespace before proceeding
     namespace_valid, error_message = validate_namespace()
     if not namespace_valid:
         console.print(f"[bold red]Error:[/bold red] {error_message}")
-        console.print("[bold yellow]⚠️ ksub cannot continue without a valid namespace. Please run 'ksub init' to set up your configuration.[/bold yellow]")
+        console.print("[bold yellow]⚠️ ksubmit cannot continue without a valid namespace. Please run 'ksubmit init' to set up your configuration.[/bold yellow]")
         raise typer.Exit(1)
 
     console.print(f"[bold]Deleting job:[/bold] {job_id}")

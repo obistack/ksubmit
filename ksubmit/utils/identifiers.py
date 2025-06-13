@@ -1,8 +1,8 @@
 """
-Identifier utilities for KSUB.
+Identifier utilities for ksubmit.
 
 This module provides functions for generating and validating identifiers
-used in KSUB, such as job IDs and submission IDs.
+used in ksubmit, such as job IDs and submission IDs.
 """
 import re
 import time
