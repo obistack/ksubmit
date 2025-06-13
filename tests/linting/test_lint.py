@@ -454,7 +454,6 @@ echo "Hello, world!"
     try:
         errors = lint_script(script)
         assert len(errors) == 1
-        print(errors[0].error_code)
         assert errors[0].error_code == LintErrorCode.JOB_BLOCK_MUST_START_WITH_IMAGE
         assert errors[0].line_number == 2
     finally:
