@@ -67,22 +67,6 @@ def kversion():
     console.print(f"[bold green]ksubmit[/bold green] version: [bold]{__version__}[/bold]")
 
 
-@app.command("init")
-def kinit(
-        namespace: Optional[str] = typer.Option(None, help="Kubernetes namespace to use (defaults to username)"),
-        email: Optional[str] = typer.Option(None, help="User email for job identification"),
-):
-    """
-    Shorthand for 'ksubmit init' - Initialize user config for submitting jobs via Kubernetes.
-
-    Examples:
-        kinit
-        kinit --namespace my-namespace
-    """
-    if initialize_config(namespace, email):
-        console.print("[bold green]✓[/bold green] Configuration initialized successfully!")
-    else:
-        console.print("[bold red]✗[/bold red] Configuration initialization failed.")
 
 
 @app.command("run")
@@ -1023,7 +1007,7 @@ def klist(
         # Log detailed error for debugging
         logger.error(f"Error in klist: {str(e)}", exc_info=True)
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Initialize ksubmit if you haven't: [bold]kinit[/bold]")
+        console.print("  • Initialize ksubmit if you haven't: [bold]kconfig init[/bold]")
         console.print("  • Submit a job first: [bold]krun <script.sh>[/bold]")
         raise typer.Exit(1)
 
@@ -1047,9 +1031,11 @@ def klint(
 
 @app.command("config")
 def kconfig(
-        action: str = typer.Argument(..., help="Action to perform: get, set, list, reset"),
+        action: str = typer.Argument(..., help="Action to perform: get, set, list, reset, init"),
         key: Optional[str] = typer.Argument(None, help="Config key to get or set"),
         value: Optional[str] = typer.Argument(None, help="Value to set for the given key"),
+        namespace: Optional[str] = typer.Option(None, help="Kubernetes namespace to use (for init)"),
+        email: Optional[str] = typer.Option(None, help="User email for job identification (for init)"),
 ):
     """
     Shorthand for 'ksubmit config' - Manage ksubmit configuration.
@@ -1059,6 +1045,8 @@ def kconfig(
         kconfig get namespace
         kconfig set namespace my-namespace
         kconfig reset
+        kconfig init
+        kconfig init --namespace my-namespace --email user@example.com
     """
     if action == "list":
         config.list()
@@ -1074,9 +1062,15 @@ def kconfig(
         config.set(key=key, value=value)
     elif action == "reset":
         config.reset()
+    elif action == "init":
+        # Call the initialize_config function from user_config module
+        if initialize_config(namespace, email):
+            console.print("[bold green]✓[/bold green] Configuration initialized successfully!")
+        else:
+            console.print("[bold red]✗[/bold red] Configuration initialization failed.")
     else:
         console.print(f"[bold red]Error:[/bold red] Unknown action: {action}")
-        console.print("Valid actions: get, set, list, reset")
+        console.print("Valid actions: get, set, list, reset, init")
         raise typer.Exit(1)
 
 
@@ -1102,7 +1096,6 @@ def main():
         "klint": klint,
         "kconfig": kconfig,
         "kversion": kversion,
-        "kinit": kinit,
     }
 
     # If the command is in the map, execute it directly

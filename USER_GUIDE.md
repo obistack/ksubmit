@@ -63,27 +63,14 @@ KSUBMIT provides a set of shorthand commands that follow the pattern `k<command>
 
 ### Initialization and Configuration
 
-#### `kinit`
-Initializes user configuration for submitting jobs via Kubernetes.
-
-```bash
-kinit
-kinit --namespace my-namespace --email user@example.com
-```
-
-This command:
-- Selects Kubernetes cluster context
-- Asks for email and normalizes it for use as a label
-- Checks that user namespace exists
-- Verifies namespace is labeled correctly
-- Checks admin storage transfer pod exists
-- Verifies shared volume mounts
-- Saves configuration
-
 #### `kconfig`
 Manages KSUBMIT configuration.
 
 ```bash
+# Initialize user configuration
+kconfig init
+kconfig init --namespace my-namespace --email user@example.com
+
 # View all configuration
 kconfig list
 
@@ -96,6 +83,15 @@ kconfig set namespace my-namespace
 # Reset configuration
 kconfig reset
 ```
+
+The `kconfig init` command:
+- Selects Kubernetes cluster context
+- Asks for email and normalizes it for use as a label
+- Checks that user namespace exists
+- Verifies namespace is labeled correctly
+- Checks admin storage transfer pod exists
+- Verifies shared volume mounts
+- Saves configuration
 
 #### `kversion`
 Displays the current version of KSUBMIT.

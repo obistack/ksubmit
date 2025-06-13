@@ -7,7 +7,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="ksubmit",
-    version="0.1.7",
+    version="0.1.8",
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -36,7 +36,6 @@ setup(
             "klint=ksubmit.cli.shorthand:main",
             "kconfig=ksubmit.cli.shorthand:main",
             "kversion=ksubmit.cli.shorthand:main",
-            "kinit=ksubmit.cli.shorthand:main",
         ],
     },
     python_requires=">=3.8",
