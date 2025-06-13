@@ -2,7 +2,7 @@
 Kubernetes client wrapper module for ksubmit.
 """
 import time
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 
 from kubernetes import client, config, watch
@@ -402,7 +402,7 @@ def set_kubernetes_context(context_name: str) -> bool:
         return False
 
 
-def check_namespace_exists(namespace: str) -> tuple[bool, Optional[str]]:
+def check_namespace_exists(namespace: str) -> Tuple[bool, Optional[str]]:
     """
     Check if a namespace exists and is accessible.
 
@@ -434,7 +434,7 @@ def check_namespace_exists(namespace: str) -> tuple[bool, Optional[str]]:
         return False, error_message
 
 
-def check_namespace_label(namespace: str, label_key: str, label_value: str) -> tuple[bool, Optional[str]]:
+def check_namespace_label(namespace: str, label_key: str, label_value: str) -> Tuple[bool, Optional[str]]:
     """
     Check if a namespace has a specific label with a specific value.
 
@@ -474,7 +474,7 @@ def check_namespace_label(namespace: str, label_key: str, label_value: str) -> t
         return False, error_message
 
 
-def check_admin_storage_transfer_pod(admin_namespace: str = "ksubmit-admin") -> tuple[bool, Optional[str]]:
+def check_admin_storage_transfer_pod(admin_namespace: str = "ksubmit-admin") -> Tuple[bool, Optional[str]]:
     """
     Check if the admin storage transfer pod exists and is running.
 
@@ -524,7 +524,7 @@ def check_admin_storage_transfer_pod(admin_namespace: str = "ksubmit-admin") -> 
         return False, f"Error checking admin storage transfer pod: {error_message}"
 
 
-def check_shared_volume_mounts(namespace: str) -> tuple[bool, Optional[str]]:
+def check_shared_volume_mounts(namespace: str) -> Tuple[bool, Optional[str]]:
     """
     Check if shared volume mounts exist in the namespace.
 
@@ -569,7 +569,7 @@ def check_shared_volume_mounts(namespace: str) -> tuple[bool, Optional[str]]:
         return False, f"Error checking shared volume mounts: {error_message}"
 
 
-def create_namespace(namespace: str) -> tuple[bool, Optional[str]]:
+def create_namespace(namespace: str) -> Tuple[bool, Optional[str]]:
     """
     Create a Kubernetes namespace if it doesn't exist.
 

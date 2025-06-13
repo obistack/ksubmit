@@ -28,7 +28,7 @@ pip install -e .
 
 1. Initialize KSUBMIT configuration:
 ```bash
-kinit
+kconfig init
 ```
 
 2. Create a job script (example.sh):
@@ -67,9 +67,9 @@ klogs <job-id>
 
 | Shorthand Command | Description |
 |---------|-------------|
-| `kinit` | Initialize user config. Selects Kubernetes cluster context, asks for email, checks namespace exists and is labeled correctly, verifies admin storage transfer pod and shared volume mounts, and saves configuration. |
+| `kconfig init` | Initialize user config. Selects Kubernetes cluster context, asks for email, checks namespace exists and is labeled correctly, verifies admin storage transfer pod and shared volume mounts, and saves configuration. |
 | `kversion` | Print the current version of ksubmit. |
-| `kconfig` | View or update stored user config (e.g. `email`, `namespace`, `imagePullSecret`). |
+| `kconfig` | Manage ksubmit configuration. Actions include: init, list, get, set, reset. |
 | `krun <file.sh>` | Parse the job script DSL and submit Kubernetes Job(s). Handles mounts, envs, secrets, volumes, retries, etc. |
 | `kls` | List submitted jobs in your namespace. Optionally filter by tags or status. |
 | `kstat <job-id>` | Get the status of a single job or job block. |
@@ -127,12 +127,19 @@ ksubmit validates job scripts against the following rules to ensure they are cor
 KSUBMIT stores configuration in `~/.ksubmit/config.yaml`. You can view or update this configuration using:
 
 ```bash
+# Initialize configuration
+kconfig init
+kconfig init --namespace my-namespace --email me@example.com
+
 # View configuration
 kconfig list
 
 # Update configuration
 kconfig set namespace my-namespace
 kconfig set email me@example.com
+
+# Reset configuration
+kconfig reset
 ```
 
 ## Examples

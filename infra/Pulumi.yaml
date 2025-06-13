@@ -1,0 +1,4 @@
+name: ksubmit-setup
+runtime: python
+description: >
+  Pulumi program to create GKE infra, GCS bucket, Workload Identity, PV/PVC, and deployment for ksubmit.

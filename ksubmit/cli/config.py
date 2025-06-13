@@ -40,7 +40,7 @@ def show():
 def list():
     """List all configuration values."""
     if not CONFIG_FILE.exists():
-        console.print("[yellow]No configuration found. Run 'kinit' to create one.[/yellow]")
+        console.print("[yellow]No configuration found. Run 'kconfig init' to create one.[/yellow]")
         return
 
     try:
@@ -57,7 +57,7 @@ def list():
 def get(key: str):
     """Get a specific configuration value."""
     if not CONFIG_FILE.exists():
-        console.print("[yellow]No configuration found. Run 'kinit' to create one.[/yellow]")
+        console.print("[yellow]No configuration found. Run 'kconfig init' to create one.[/yellow]")
         return
 
     try:
@@ -89,7 +89,7 @@ def reset():
         # Remove the config file
         CONFIG_FILE.unlink(missing_ok=True)
         console.print("[bold green]✓[/bold green] Configuration has been reset.")
-        console.print("[yellow]Run 'kinit' to create a new configuration.[/yellow]")
+        console.print("[yellow]Run 'kconfig init' to create a new configuration.[/yellow]")
     except Exception as e:
         console.print(f"[bold red]Error resetting configuration:[/bold red] {str(e)}")
 

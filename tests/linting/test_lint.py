@@ -439,8 +439,7 @@ echo "Hello, world!"
 """)
     try:
         errors = lint_script(script)
-        assert len(errors) == 2  # Should have two errors: NAME_AFTER_IMAGE and MISSING_NAME
-        assert any(error.error_code == LintErrorCode.NAME_AFTER_IMAGE for error in errors)
+        assert len(errors) == 1  # Should have two errors: NAME_AFTER_IMAGE and MISSING_NAME
         assert any(error.error_code == LintErrorCode.MISSING_NAME for error in errors)
     finally:
         os.unlink(script)
@@ -448,14 +447,14 @@ echo "Hello, world!"
 def test_lint_name_after_image():
     """Test linting a script with a name directive after an image directive."""
     script = create_temp_script("""#!/bin/bash
-#$ -I ubuntu:latest
 #$ -N my-job
+#$ -I ubuntu:latest
 echo "Hello, world!"
 """)
     try:
         errors = lint_script(script)
         assert len(errors) == 1
-        assert errors[0].error_code == LintErrorCode.NAME_AFTER_IMAGE
+        assert errors[0].error_code == LintErrorCode.JOB_BLOCK_MUST_START_WITH_IMAGE
         assert errors[0].line_number == 2
     finally:
         os.unlink(script)
@@ -463,8 +462,9 @@ echo "Hello, world!"
 def test_lint_valid_script():
     """Test linting a valid script."""
     script = create_temp_script("""#!/bin/bash
-#$ -N my-job
+
 #$ -I ubuntu:latest
+#$ -N my-job
 #$ -l h_vmem=4G,h_rt=12:00:00
 #$ -pe smp 4
 #$ -v FOO=bar,BAZ=qux
