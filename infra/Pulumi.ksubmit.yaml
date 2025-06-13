@@ -1,0 +1,6 @@
+encryptionsalt: v1:O2Er3dCrCrY=:v1:2cSfvvks9vhhTePo:oPc5tOR1d+9wFWMoiggFPvFrHcDoIg==
+config:
+  ksubmit-setup:project: lister-1234
+  ksubmit-setup:bucketName: scratchspaces
+  ksubmit-setup:mode: admin
+  gcp:project: lister-1234
