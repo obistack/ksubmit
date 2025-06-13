@@ -5,7 +5,7 @@ import os
 import yaml
 import re
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 from rich.console import Console
 from ksubmit.config.constants import CONFIG_DIR, CONFIG_FILE, SECRETS_FILE
 
@@ -329,8 +329,7 @@ def get_namespace() -> str:
     config = get_config()
     return config.get('namespace', 'default')
 
-
-def validate_namespace() -> tuple[bool, Optional[str]]:
+def validate_namespace() -> Tuple[bool, Optional[str]]:
     """
     Validate that the configured namespace exists and is accessible.
 
