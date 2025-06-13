@@ -69,6 +69,7 @@ klogs <job-id>
 |---------|-------------|
 | `kconfig init` | Initialize user config. Selects Kubernetes cluster context, asks for email, checks namespace exists and is labeled correctly, verifies admin storage transfer pod and shared volume mounts, and saves configuration. |
 | `kversion` | Print the current version of ksubmit. |
+| `khelp` | List all available commands, their parameters, and purposes. Use `khelp <command>` for detailed help on a specific command. |
 | `kconfig` | Manage ksubmit configuration. Actions include: init, list, get, set, reset. |
 | `krun <file.sh>` | Parse the job script DSL and submit Kubernetes Job(s). Handles mounts, envs, secrets, volumes, retries, etc. |
 | `kls` | List submitted jobs in your namespace. Optionally filter by tags or status. |

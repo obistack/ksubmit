@@ -7,6 +7,7 @@ These commands are designed to be more concise and easier to use than the full k
 import json
 import logging
 import os
+import inspect
 from pathlib import Path
 from typing import Optional, Dict, Any
 
@@ -225,7 +226,7 @@ def kstat(
         console.print("[bold yellow]Try:[/bold yellow]")
         console.print("  • To check status of a specific job: [bold]kstat <job-id>[/bold]")
         console.print("  • To check status of all jobs in a run: [bold]kstat <run-id>[/bold]")
-        console.print("  • To list all runs: [bold]klist[/bold]")
+        console.print("  • To list all runs: [bold]kls --runs[/bold]")
 
 
 def handle_submission_status(run_id: str, output: Optional[str] = None):
@@ -242,7 +243,7 @@ def handle_submission_status(run_id: str, output: Optional[str] = None):
     if not jobs:
         console.print(f"[bold red]Error:[/bold red] No jobs found for run ID {run_id}")
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Check if the run ID is correct: [bold]klist[/bold]")
+        console.print("  • Check if the run ID is correct: [bold]kls --runs[/bold]")
         console.print("  • Submit a new job: [bold]krun <script.sh>[/bold]")
         return  # Return instead of raising an exception for graceful exit
 
@@ -350,7 +351,7 @@ def klogs(
         console.print("[bold yellow]Try:[/bold yellow]")
         console.print("  • To view logs of a specific job: [bold]klogs <job-id>[/bold]")
         console.print("  • To view logs of all jobs in a run: [bold]klogs <run-id>[/bold]")
-        console.print("  • To list all runs: [bold]klist[/bold]")
+        console.print("  • To list all runs: [bold]kls --runs[/bold]")
         raise typer.Exit(1)
 
 
@@ -375,7 +376,7 @@ def handle_submission_logs(run_id: str, follow: bool = False, container: Optiona
     if not jobs:
         console.print(f"[bold red]Error:[/bold red] No jobs found for run ID {run_id}")
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Check if the run ID is correct: [bold]klist[/bold]")
+        console.print("  • Check if the run ID is correct: [bold]kls --runs[/bold]")
         console.print("  • Submit a new job: [bold]krun <script.sh>[/bold]")
         return  # Return instead of raising an exception for graceful exit
 
@@ -441,7 +442,7 @@ def kdesc(
         console.print("[bold yellow]Try:[/bold yellow]")
         console.print("  • To describe a specific job: [bold]kdesc <job-id>[/bold]")
         console.print("  • To describe all jobs in a run: [bold]kdesc <run-id>[/bold]")
-        console.print("  • To list all runs: [bold]klist[/bold]")
+        console.print("  • To list all runs: [bold]kls --runs[/bold]")
         raise typer.Exit(1)
 
 
@@ -462,7 +463,7 @@ def handle_submission_describe(run_id: str, output: Optional[str] = None,
     if not jobs:
         console.print(f"[bold red]Error:[/bold red] No jobs found for run ID {run_id}")
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Check if the run ID is correct: [bold]klist[/bold]")
+        console.print("  • Check if the run ID is correct: [bold]kls --runs[/bold]")
         console.print("  • Submit a new job: [bold]krun <script.sh>[/bold]")
         return  # Return instead of raising an exception for graceful exit
 
@@ -756,7 +757,7 @@ def kdel(
         console.print("[bold yellow]Try:[/bold yellow]")
         console.print("  • To delete a specific job: [bold]kdel <job-id>[/bold]")
         console.print("  • To delete all jobs in a run: [bold]kdel <run-id>[/bold]")
-        console.print("  • To list all runs: [bold]klist[/bold]")
+        console.print("  • To list all runs: [bold]kls --runs[/bold]")
         raise typer.Exit(1)
 
 
@@ -777,7 +778,7 @@ def handle_submission_delete(run_id: str, output: Optional[str] = None,
     if not jobs:
         console.print(f"[bold red]Error:[/bold red] No jobs found for run ID {run_id}")
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Check if the run ID is correct: [bold]klist[/bold]")
+        console.print("  • Check if the run ID is correct: [bold]kls --runs[/bold]")
         console.print("  • Submit a new job: [bold]krun <script.sh>[/bold]")
         return  # Return instead of raising an exception for graceful exit
 
@@ -829,18 +830,69 @@ def kls(
         label: Optional[str] = typer.Option(None, "--label", "-l", help="Filter by label (format: key=value)"),
         output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
         run_id: Optional[str] = typer.Option(None, "--run", "-r", help="Filter by run ID"),
+        list_runs: bool = typer.Option(False, "--runs", help="List runs instead of jobs"),
+        limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit the number of runs to show (when using --runs)"),
 ):
     """
-    Shorthand for 'ksubmit list' - List all jobs or jobs in a run.
+    List jobs or runs in your namespace.
 
     Examples:
-        kls
-        kls --status running
-        kls --label project=ml
-        kls --run <run-id>
+        kls                      # List all jobs
+        kls --status running     # Filter jobs by status
+        kls --label project=ml   # Filter jobs by label
+        kls --run <run-id>       # List jobs in a specific run
+        kls --runs               # List all runs
+        kls --runs --limit 10    # List 10 most recent runs
+        kls --runs --output json # List runs in JSON format
     """
     try:
-        if run_id:
+        if list_runs:
+            # List runs (functionality from klist)
+            # Get all submissions from the database
+            from ksubmit.utils.database import get_all_submissions
+            submissions = get_all_submissions()
+
+            # Apply limit if specified
+            if limit and limit > 0:
+                submissions = submissions[:limit]
+
+            # Display results
+            if output == "json":
+                console.print(json.dumps(submissions, indent=2))
+            elif output == "yaml":
+                console.print(yaml.dump(submissions))
+            else:
+                # Format as table
+                table = Table(title="All Runs")
+                table.add_column("Run ID")
+                table.add_column("Job Count")
+                table.add_column("Submit Time")
+                table.add_column("Job Names")
+
+                for sub in submissions:
+                    # Truncate job names if there are too many
+                    job_names = sub.get("job_names", [])
+                    if len(job_names) > 3:
+                        job_names_display = ", ".join(job_names[:3]) + f" (+{len(job_names) - 3} more)"
+                    else:
+                        job_names_display = ", ".join(job_names)
+
+                    table.add_row(
+                        sub.get("run_id", "N/A"),
+                        str(sub.get("job_count", 0)),
+                        sub.get("submit_time", "N/A"),
+                        job_names_display
+                    )
+
+                console.print(table)
+
+                # Show help text
+                console.print("\n[bold yellow]Commands to manage runs:[/bold yellow]")
+                console.print("  • Check status: [bold]kstat <run-id>[/bold]")
+                console.print("  • View logs: [bold]klogs <run-id>[/bold]")
+                console.print("  • Get details: [bold]kdesc <run-id>[/bold]")
+                console.print("  • Delete jobs: [bold]kdel <run-id>[/bold]")
+        elif run_id:
             # Validate run ID
             run_id = validate_identifier(run_id)
             if not run_id.startswith("run-"):
@@ -870,7 +922,7 @@ def kls(
         console.print("  • To list all jobs: [bold]kls[/bold]")
         console.print("  • To list jobs with a specific status: [bold]kls --status running[/bold]")
         console.print("  • To list jobs in a specific run: [bold]kls --run <run-id>[/bold]")
-        console.print("  • To list all runs: [bold]klist[/bold]")
+        console.print("  • To list all runs: [bold]kls --runs[/bold]")
         raise typer.Exit(1)
 
 
@@ -889,7 +941,7 @@ def handle_submission_list(run_id: str, status_filter: Optional[str] = None, out
     if not jobs:
         console.print(f"[bold red]Error:[/bold red] No jobs found for run ID {run_id}")
         console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Check if the run ID is correct: [bold]klist[/bold]")
+        console.print("  • Check if the run ID is correct: [bold]kls --runs[/bold]")
         console.print("  • Submit a new job: [bold]krun <script.sh>[/bold]")
         return  # Return instead of raising an exception for graceful exit
 
@@ -937,79 +989,6 @@ def handle_submission_list(run_id: str, status_filter: Optional[str] = None, out
         console.print(table)
 
 
-@app.command("list")
-def klist(
-        output: Optional[str] = typer.Option(None, "--output", "-o", help="Output format: table (default), json, yaml"),
-        limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit the number of runs to show"),
-):
-    """
-    List all runs and their associated jobs.
-
-    Examples:
-        klist
-        klist --output json
-        klist --limit 10
-    """
-    try:
-        # Get all submissions from the database
-        from ksubmit.utils.database import get_all_submissions
-        submissions = get_all_submissions()
-
-        # Apply limit if specified
-        if limit and limit > 0:
-            submissions = submissions[:limit]
-
-        # Display results
-        if output == "json":
-            console.print(json.dumps(submissions, indent=2))
-        elif output == "yaml":
-            console.print(yaml.dump(submissions))
-        else:
-            # Format as table
-            table = Table(title="All Runs")
-            table.add_column("Run ID")
-            table.add_column("Job Count")
-            table.add_column("Submit Time")
-            table.add_column("Job Names")
-
-            for sub in submissions:
-                # Truncate job names if there are too many
-                job_names = sub.get("job_names", [])
-                if len(job_names) > 3:
-                    job_names_display = ", ".join(job_names[:3]) + f" (+{len(job_names) - 3} more)"
-                else:
-                    job_names_display = ", ".join(job_names)
-
-                table.add_row(
-                    sub.get("run_id", "N/A"),
-                    str(sub.get("job_count", 0)),
-                    sub.get("submit_time", "N/A"),
-                    job_names_display
-                )
-
-            console.print(table)
-
-            # Show help text
-            console.print("\n[bold yellow]Commands to manage runs:[/bold yellow]")
-            console.print("  • Check status: [bold]kstat <run-id>[/bold]")
-            console.print("  • View logs: [bold]klogs <run-id>[/bold]")
-            console.print("  • Get details: [bold]kdesc <run-id>[/bold]")
-            console.print("  • Delete jobs: [bold]kdel <run-id>[/bold]")
-
-    except typer.Exit as e:
-        # Handle typer.Exit exceptions gracefully
-        # No need to print an error message as it should have been printed by the function
-        # Just exit with the same code
-        raise typer.Exit(e.exit_code)
-    except Exception as e:
-        # Proper error handling with helpful messages
-        console.print(f"[bold red]Error:[/bold red] {str(e)}")
-        # Log detailed error for debugging
-        logger.error(f"Error in klist: {str(e)}", exc_info=True)
-        console.print("[bold yellow]Try:[/bold yellow]")
-        console.print("  • Initialize ksubmit if you haven't: [bold]kconfig init[/bold]")
-        console.print("  • Submit a job first: [bold]krun <script.sh>[/bold]")
-        raise typer.Exit(1)
 
 
 @app.command("lint")
@@ -1027,6 +1006,125 @@ def klint(
         klint my_script.sh --json
     """
     lint.lint(script_path=script_path, strict=strict, json_output=json_output)
+
+
+@app.command("help")
+def khelp(
+    command: Optional[str] = typer.Argument(None, help="Specific command to get help for")
+):
+    """
+    List all available commands, their parameters, and purposes.
+
+    If a specific command is provided, detailed help for that command will be shown.
+
+    Examples:
+        khelp
+        khelp krun
+    """
+    # Map command names to functions
+    commands = {
+        "krun": krun,
+        "kstat": kstat,
+        "klogs": klogs,
+        "kdesc": kdesc,
+        "kdel": kdel,
+        "kls": kls,
+        "klint": klint,
+        "kconfig": kconfig,
+        "kversion": kversion,
+        "khelp": khelp,
+    }
+
+    if command:
+        # Show detailed help for a specific command
+        if command in commands:
+            func = commands[command]
+            console.print(f"[bold cyan]{command}[/bold cyan]")
+
+            # Get the docstring
+            if func.__doc__:
+                doc_lines = func.__doc__.strip().split('\n')
+                purpose = doc_lines[0].strip()
+                console.print(f"[bold]Purpose:[/bold] {purpose}")
+
+                # Print examples if available
+                examples = []
+                in_examples = False
+                for line in doc_lines:
+                    if line.strip().startswith("Examples:"):
+                        in_examples = True
+                        continue
+                    if in_examples and line.strip():
+                        examples.append(line.strip())
+
+                if examples:
+                    console.print("\n[bold]Examples:[/bold]")
+                    for example in examples:
+                        console.print(f"  {example}")
+
+            # Get the parameters
+            sig = inspect.signature(func)
+            params = []
+            for name, param in sig.parameters.items():
+                if name not in ["self", "cls"]:
+                    # Try to get the help text from the typer.Argument or typer.Option
+                    help_text = ""
+                    default = "Required" if param.default == inspect.Parameter.empty else param.default
+
+                    # Check if the parameter has a default factory
+                    if hasattr(param.default, "help"):
+                        help_text = param.default.help
+
+                    params.append((name, str(param.annotation), default, help_text))
+
+            if params:
+                console.print("\n[bold]Parameters:[/bold]")
+                table = Table(show_header=True, header_style="bold")
+                table.add_column("Name")
+                table.add_column("Type")
+                table.add_column("Default")
+                table.add_column("Description")
+
+                for name, type_str, default, help_text in params:
+                    # Clean up type string
+                    type_str = type_str.replace("typing.", "").replace("Optional[", "").replace("]", "")
+                    if type_str == "inspect.Parameter.empty":
+                        type_str = "Any"
+
+                    # Format default value
+                    if default == "Required":
+                        default_str = "[bold red]Required[/bold red]"
+                    elif default is None:
+                        default_str = "None"
+                    elif default is False:
+                        default_str = "False"
+                    elif default is True:
+                        default_str = "True"
+                    else:
+                        default_str = str(default)
+
+                    table.add_row(name, type_str, default_str, help_text)
+
+                console.print(table)
+        else:
+            console.print(f"[bold red]Error:[/bold red] Command '{command}' not found.")
+            console.print("Run [bold]khelp[/bold] to see all available commands.")
+    else:
+        # Show a list of all commands
+        console.print("[bold cyan]Available Commands:[/bold cyan]\n")
+        table = Table(show_header=True, header_style="bold")
+        table.add_column("Command")
+        table.add_column("Purpose")
+
+        for cmd_name, func in sorted(commands.items()):
+            purpose = ""
+            if func.__doc__:
+                purpose = func.__doc__.strip().split('\n')[0].strip()
+
+            table.add_row(cmd_name, purpose)
+
+        console.print(table)
+        console.print("\nRun [bold]khelp <command>[/bold] for detailed help on a specific command.")
 
 
 @app.command("config")
@@ -1092,10 +1190,10 @@ def main():
         "kdesc": kdesc,
         "kdel": kdel,
         "kls": kls,
-        "klist": klist,
         "klint": klint,
         "kconfig": kconfig,
         "kversion": kversion,
+        "khelp": khelp,
     }
 
     # If the command is in the map, execute it directly
