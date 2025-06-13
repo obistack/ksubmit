@@ -989,8 +989,6 @@ def handle_submission_list(run_id: str, status_filter: Optional[str] = None, out
         console.print(table)
 
 
-
-
 @app.command("lint")
 def klint(
         script_path: str = typer.Argument(..., help="Path to the UGER-style shell script to lint"),
