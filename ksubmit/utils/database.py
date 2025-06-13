@@ -94,7 +94,7 @@ def get_jobs_for_submission(submission_id: str) -> List[Tuple[str, str]]:
         submission_id: The ID of the submission
 
     Returns:
-        A list of tuples containing (job_id, job_name) for all jobs in the submission
+        A list of Tuples containing (job_id, job_name) for all jobs in the submission
     """
     # Initialize database if it doesn't exist
     initialize_database()
